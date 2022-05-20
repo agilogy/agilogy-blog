@@ -57,7 +57,7 @@ But, what about impure functions? You know I love pure functions, right?
 
 <img src="../assets/agile_jordi.jpg" alt="agile_jordi" style="zoom:70%;" />
 
-What happens whey you want to test something that is not a pure function?
+What happens when you want to test something that is not a pure function?
 
 ### Testing non total procedures
 
