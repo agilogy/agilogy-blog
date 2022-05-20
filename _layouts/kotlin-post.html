@@ -2,7 +2,44 @@
 layout: post
 ---
 
-<script src="https://unpkg.com/kotlin-playground@1" data-selector="code"></script>
+<script src="https://unpkg.com/kotlin-playground@1"></script>
+
+<script>
+	function copyAttributes(source, target) {
+	  return Array.from(source.attributes).forEach(attribute => {
+	    target.setAttribute(
+	      attribute.nodeName === 'id' ? 'data-id' : attribute.nodeName,
+	      attribute.nodeValue,
+	    );
+	  });
+	}
+	 
+	document.addEventListener('DOMContentLoaded', function() {
+	  // Kotlin playground is controlled via attributes in the html element
+	  // We can set attributes to the surrounding pre block via block IALS: https://kramdown.gettalong.org/syntax.html#block-ials
+	  // But we can't set them on the inner <code> element
+	  // This code copies existing elements and sets some sane defaults
+	  const matches = document.querySelectorAll("pre>code");
+	  matches.forEach(function(codeBlock) {
+	  	const preBlock = codeBlock.parentNode;
+	  	console.debug(preBlock);
+	  	copyAttributes(preBlock, codeBlock);
+        if(!preBlock.hasAttribute('data-runnableIn')) codeBlock.setAttribute('data-highlight-only', 'true');
+        else codeBlock.setAttribute('data-target-platform', preBlock.getAttribute('data-runnableIn'));
+        if(!preBlock.hasAttribute('lines')) codeBlock.setAttribute('lines', 'true');
+        console.debug('code after  copying attributes: ',codeBlock);
+
+      });
+	  KotlinPlayground('code.language-kotlin');
+	});
+
+
+// var playground = require('arrow-playground');
+
+// document.addEventListener('DOMContentLoaded', function() {
+  // playground('.language-kotlin'); // attach to all <code> elements
+// });
+</script>
 
 
 {{ content }}
