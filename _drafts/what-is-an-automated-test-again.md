@@ -8,13 +8,11 @@ categories: kotlin,fp
 
 Back in the day, we used to just hack some code, run it, and give it some inputs to see whether we acomplished what we wanted or not. Naturally, this is no longer the case, and nowadays we use automated tests to automatically check our code behaves as expected.
 
-I know, I know... 
+![Bored Boring GIF - Bored Boring Ntc - Descubre & Comparte GIFs](../assets/bored-boring.gif)
 
-![Bored Boring GIF - Bored Boring Ntc - Descubre & Comparte GIFs](/assets/bored-boring.gif)
+I know, I know... But let's revisit how do we test a simple program. Bear with me, please, as many people and teams just skiped that part of the explanation when talking about tests to their juniors.
 
 ## Basic unit testing
-
-But let's revisit how do we test a simple program. Bear with me, please, as many people and teams just skiped that part of the explanation when talking about tests to their juniors.
 
 Let's imagine we have a simple function like this one:
 
@@ -57,7 +55,7 @@ Easy peasy! Isn't it?
 
 But, what about impure functions? You know I love pure functions, right?
 
-<img src="/assets/agile_jordi.jpg" alt="agile_jordi" style="zoom:70%;" />
+<img src="../assets/agile_jordi.jpg" alt="agile_jordi" style="zoom:70%;" />
 
 What happens whey you want to test something that is not a pure function?
 
