@@ -2,9 +2,9 @@
 
 ## Punts clau
 
-- Com s'escriu una prova automatitzada d'una funció pura?
-  - Les assercions: Què ens diuen quan fallen?
-- Com s'escriu una prova automatitzada d'un procediment (o component sw)
+- [x] Com s'escriu una prova automatitzada d'una funció pura?
+- [ ] Les assercions: Què ens diuen quan fallen?
+- [x] Com s'escriu una prova automatitzada d'un procediment (o component sw)
   - Estat inicial **conegut**: Res de bases de dades compartides, entorns on altres usuaris poden variar el resultat de la prova, _suites_ de proves que només passen si les proves s'executen en un ordre determinat...
   - Assercions sobre l'estat final
 - Què és una _test suite_?

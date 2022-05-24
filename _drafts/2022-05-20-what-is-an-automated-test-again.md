@@ -1,7 +1,7 @@
 ---
 layout: kotlin-post
 title:  "What is an automated test, again?"
-categories: kotlin,fp
+categories: kotlin,testing
 ---
 
 {::options syntax_highlighter="nil" /}
@@ -33,35 +33,41 @@ Like this:
 
 {: data-runnableIn='junit'}
 ```kotlin
-import org.junit.*
-import org.junit.Assert.*
-class Example() {
-  fun sum(a: Int, b: Int): Int = a + b
-//sampleStart
-  @Test fun testSumPositives() {
-    assertEquals(23, sum(21,2))
-  }
+import org.junit.Assert.assertEquals
+import org.junit.Test
 
-  @Test fun testSumPositiveAndNegative() {
-    assertEquals(19, sum(21,-2))
-  }
-//sampleEnd    
+class Example {
+    fun sum(a: Int, b: Int): Int = a + b
+
+    //sampleStart
+    @Test
+    fun testSumPositives() {
+        assertEquals(23, sum(21, 2))
+    }
+
+    @Test
+    fun testSumPositiveAndNegative() {
+        assertEquals(19, sum(21, -2))
+    }
+    //sampleEnd
 }
 ```
+
+You probably already know, but just in case: ` assertEquals` takes the **expected** value as the **first** argument and the **actual** value, the one your code actually returned, as the **second** argument. Please, please, stop doing the order of those arguments wrong, as failing tests are really confusing when they are switched.
 
 Easy peasy! Isn't it?
 
 ## Not so basic unit testing: Side effects everywhere!
 
-But, what about impure functions? You know I love pure functions, right?
+But, what about impure "functions"? You know I love pure functions, right?
 
 <img src="../assets/agile_jordi.jpg" alt="agile_jordi" style="zoom:70%;" />
 
 What happens when you want to test something that is not a pure function?
 
-### Testing non total procedures
+### Testing non total "functions"
 
-Let's start with totality, as that one is easy. When a function is not total, you can 2 different things in your tests:
+Let's start with totality, as that one is easy. A function is total when it returns a result (of the specified type) for every possible input. When a function is not total, you can do 2 different things in your tests:
 
 1. Avoid testing inputs for which the function is not defined
 2. Test the function fails properly when it is not defined
@@ -72,13 +78,16 @@ The second one is doable by hand with `try ... catch`, although every testing li
 
 {: data-runnableIn='junit'}
 ```kotlin
-import org.junit.*
-import org.junit.Assert.*
+mport org.junit.Assert.assertEquals
+import org.junit.Test
 
-
-class Example() {
+class Example {
     inline fun <reified T : Throwable> assertThrows(executable: () -> Unit): T =
-        when (val throwable: Throwable? = try { executable() } catch (caught: Throwable) { caught } as? Throwable) {
+        when (val throwable: Throwable? = try {
+            executable()
+        } catch (caught: Throwable) {
+            caught
+        } as? Throwable) {
             null -> throw IllegalArgumentException("Expected an exception of type ${T::class} but none was thrown")
             is T -> throwable
             else -> throw throwable
@@ -92,16 +101,35 @@ class Example() {
         val t = assertThrows<ArithmeticException> { div(23, 0) }
         assertEquals("/ by zero", t.message)
     }
-//sampleEnd
-
+    //sampleEnd
 }
 ```
 
-### Testing non deterministic procedures: State
+There is still a catch. Your function may be non total without you, the poor programming, knowing about it. But if you are lucky enough that one of your tests discovers such a hole in your function, the test library will usually deal with it, showing the thrown exception as a particular case of a test failure:
 
-Like you know, a procedure is not deterministic when, for the same inputs, it may return different outputs. One very good reason for not returning the same input is having state. If you query the amount in your savings bank account you don't expect it to be always the same. You expect the result of such a procedure to depend on the state of what is being test.
+{: data-runnableIn='junit'}
+```kotlin
+import org.junit.Assert.assertTrue
+import org.junit.Test
 
-Take this simple accumulator:
+class Example {
+    fun div(a: Int, b: Int): Int = a / b
+
+    //sampleStart
+    @Test
+    fun failingTestDueToUnexpectedException() {
+        assertTrue(div(23, 0) < 23)
+    }
+    //sampleEnd
+}
+```
+
+
+### Testing non deterministic "function": State
+
+Like you know, a "function" is not deterministic when, for the same inputs, it may return different outputs. One very good reason for it to not return the same input is having state. If you query the amount in your savings bank account you don't expect it to be always the same. You expect the result to depend on the state of what is being test.
+
+Take this simple adder:
 
 ```kotlin
 class MemoryAdder(){
@@ -110,7 +138,7 @@ class MemoryAdder(){
 }
 ```
 
-How do we test the `getCounter` method? As the result depends on the state of the accumulator, we need a new algorithm:
+How do we test the `add` method? As the result depends on the state of the `MemoryAdder`, we need a new algorithm:
 1. Set an initial state defined in the test
 2. Invoke the function with input values defined in the test
 3. Collect the result returned by the function and **assert** it is what we expect
@@ -118,33 +146,33 @@ How do we test the `getCounter` method? As the result depends on the state of th
 
 Note that many developers and teams forget step number 4. If you don't check the final state of the system under test, such system can behave as you expected in your test and, still, fail to end in the state you expect it to have at the end.
 
-Other teams, though, forget about step number 1. If your system uses any kind of persistent state, that means you are testing it with whatever is in such storage when you launch the test. And that grants you some headache whenever that state is not the one you expected. That can be caused by some other test changing some state you didn't anticipate it would change, you or some other developer running tests in concurrency with your test execution... You know. I've seen things you people wouldn't believe.
+Other teams, though, forget about step number 1. If your system uses any kind of persistent state, that means you are testing it with whatever is present in such storage when you launch the test. And that grants you some headache whenever that state is not the one you expected. That can be caused by some other test changing some state you didn't anticipate it would change, you or some other developer running tests in concurrency with your test execution, someone doing manual tests using the same database you expected no one to use... You know. I've seen things you people wouldn't believe.
 
 But I digress... Let's apply our new algorithm:
 
 {: data-runnableIn='junit'}
 ```kotlin
-import org.junit.*
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Test
 
-class MemoryAdderTest() {
-    class MemoryAdder(){
-      var lastInput: Int = 0
-      fun add(a: Int): Int = (lastInput + a).also{ lastInput = a }
+class MemoryAdderTest {
+    class MemoryAdder {
+        var lastInput: Int = 0
+        fun add(a: Int): Int = (lastInput + a).also { lastInput = a }
     }
 
-		@Test fun testAdderWithSate() {
-      //sampleStart
-      // 1. Set initial state:
-      val ma = MemoryAdder()
-      ma.add(23)
-      // 2 and 3. Execute the method and assert
-      assertEquals(25, ma.add(2))
-      // 4. Collect the final state and assert
-      assertEquals(2, ma.lastInput)
-			//sampleEnd
+    @Test
+    fun testAdderWithSate() {
+        //sampleStart
+        // 1. Set initial state:
+        val ma = MemoryAdder()
+        ma.add(23)
+        // 2 and 3. Execute the method and assert
+        assertEquals(25, ma.add(2))
+        // 4. Collect the final state and assert
+        assertEquals(2, ma.lastInput)
+        //sampleEnd
     }
-
 }
 ```
 
@@ -160,4 +188,4 @@ I hope you enjoyed this one. See you soon!
 
 
 [^1]: Asserting here means that you check the value is what you expected or else make the test fail
-[^2]: Yes, it's a **cat** screaming. Yes, pun intended.
+[^2]: Yes, it's a **cat** screaming. Yes, coming from Scala, that pun is indeed intended. I didn't find any arrow screaming, sorry about that.

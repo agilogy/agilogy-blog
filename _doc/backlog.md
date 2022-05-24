@@ -10,9 +10,14 @@
 
 ## Articles
 
-- [ ] A series on testing
 - [ ] A series on Hexagonal Architecture
 - [ ] Yet Another Introduction to Functional Programming
 - [ ] A series on Kafka + Avro schema evolution
-- [ ] A series on building a property based testing framework in Kotlin
 - [ ] A short article on Kotlin for Scala developers
+
+## On testing
+
+- [ ] [Aquí](../_drafts/testing-and-persistent-state.md) dic "I won't go into details, at least not now, but you can use Docker and other virtualization solutions to run such infrastruture" referint-me a les bases de dades usades per les proves automatitzades. Aprofundir-hi.
+- [ ] [Aquí](../_drafts/testing-and-persistent-state.md) dic "You wouldn't have `Connection` as a parameter of this function? Nice, me neither. ... I plan to write about dependency injection using this very example as our starting point."
+- [ ] El biaix de les proves cap al verd: els desenvolupadors volem que surtin en verd, però si totes les proves sortissin sempre en verd és que hem estat perdent el temps escrivint-les
+- [ ] A series on building a property based testing framework in Kotlin
