@@ -1,6 +1,7 @@
 ---
 layout: kotlin-post
 title:  "Testing other side effects"
+author: "Jordi Pradel"
 categories: kotlin,testing,databases
 ---
 
@@ -63,11 +64,10 @@ The problem, here is that we are getting the current date `LocalDate.now()` and 
 >
 > ...
 >
-> Having state in your program is never simple because it has a  fundamental complecting that goes on in its artifacts. It complects  value and time. You don't have the ability to get a value independent of time. And sometimes not an ability to get a value in any proper sense  at all. But again, it's a great example. This is easy. It's totally  familiar. It's at hand. It's in all the programming languages. This is  so easy. This complexity is so easy.
+> Having state in your program is never simple because it has a  fundamental complecting that goes on in its artifacts. It complects  value and time. (...) Well, if every time you call that method with the same arguments, you  can get a different result, guess what happened? That complexity just  leaked right out of there. It doesn't matter that you can't see the variable. If the thing that's wrapping it is stateful and the thing  that's wrapping that is still stateful, in other words by stateful I  mean every time you ask it the same question you get a different answer, you have this complexity and it's like poison.
 >
-> Well, if every time you call that method with the same arguments, you  can get a different result, guess what happened? That complexity just  leaked right out of there. It doesn't matter that you can't see the  variable. If the thing that's wrapping it is stateful and the thing  that's wrapping that is still stateful, in other words by stateful I  mean every time you ask it the same question you get a different answer, you have this complexity and it's like poison.
 
-If you haven't seen this famous talk, make yourself a favour and bookmark it. Then, when you are ready, take a cup of your best coffee, tea, mate or whatever and enjoy an hour of pure talent. But now, let's return to the world of us simple mortals.
+If you haven't seen this famous talk, make yourself a favour and bookmark it. Then, when you are ready, take a cup of your best coffee, tea, mate or whatever is your poison and enjoy an hour of pure talent. But now, let's return to the world of us simple mortals.
 
 So, even being a one-liner, we want to simplify this function. A first step would be to rule off the function that we find difficult to test:
 

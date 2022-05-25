@@ -1,6 +1,7 @@
 ---
 layout: kotlin-post
 title:  "Testing and persistent state"
+author: "Jordi Pradel"
 categories: kotlin,testing,databases
 ---
 

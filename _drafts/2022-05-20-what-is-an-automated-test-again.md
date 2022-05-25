@@ -1,6 +1,7 @@
 ---
 layout: kotlin-post
 title:  "What is an automated test, again?"
+author: "Jordi Pradel"
 categories: kotlin,testing
 ---
 
