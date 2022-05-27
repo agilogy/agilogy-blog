@@ -3,7 +3,7 @@ layout: kotlin-post
 title: Testing and persistent state
 author: Jordi Pradel
 categories: kotlin,testing,databases
-date: 2022-05-27 12:34 +0200
+date: 2022-05-27 12:35 +0200
 ---
 {::options syntax_highlighter="nil" /}
 
@@ -151,5 +151,5 @@ But many open questions from the first article remain unanswered. What about tes
 
 More on all of that to come. See you soon!
 
-
+---
 [^1]: I'm assuming something similar to an sql database here, and talking about rows, etc. It doesn't matter, for the purpose of this article. We could be speaking of a document database and its documents instead.
