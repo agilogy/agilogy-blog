@@ -3,13 +3,11 @@ layout: kotlin-post
 title: What is an automated test, again?
 author: Jordi Pradel
 categories: kotlin,testing
+date: 2022-05-27 11:48 +0200
 ---
-
-Back in the day, we used to just hack some code, run it, and give it some inputs to see whether we acomplished what we wanted or not. Naturally, this is no longer the case, and nowadays we use automated tests to automatically check our code behaves as expected.
-
 {::options syntax_highlighter="nil" /}
 
-<!--more-->
+Back in the day, we used to just hack some code, run it, and give it some inputs to see whether we acomplished what we wanted or not. Naturally, this is no longer the case, and nowadays we use automated tests to automatically check our code behaves as expected.
 
 ![Bored Boring GIF - Bored Boring Ntc - Descubre & Comparte GIFs](../assets/bored-boring.gif)
 
@@ -186,6 +184,8 @@ What if your function is not deterministic because... it generates random values
 Let's talk about these dreaded scenarios in our next post about software testing!
 
 I hope you enjoyed this one. See you soon!
+
+---
 
 
 [^1]: Asserting here means that you check the value is what you expected or else make the test fail
