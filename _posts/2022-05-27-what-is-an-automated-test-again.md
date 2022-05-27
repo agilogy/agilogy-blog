@@ -81,7 +81,7 @@ The second one is doable by hand with `try ... catch`, although every testing li
 
 {: data-runnableIn='junit'}
 ```kotlin
-mport org.junit.Assert.assertEquals
+import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class Example {
