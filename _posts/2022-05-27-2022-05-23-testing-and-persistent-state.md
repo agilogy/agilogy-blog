@@ -1,10 +1,10 @@
 ---
 layout: kotlin-post
-title:  "Testing and persistent state"
-author: "Jordi Pradel"
+title: Testing and persistent state
+author: Jordi Pradel
 categories: kotlin,testing,databases
+date: 2022-05-27 12:35 +0200
 ---
-
 {::options syntax_highlighter="nil" /}
 
 In [our previous post about software testing](/2022-05-20-what-is-an-automated-test-again.html), we gave the perfect receipt to test something even in the presence of state. Armed with that, we were able to test pure functions and "functions" whose responses depend on some state. I left you with the promise of talking about getting the current time, reading or writing from files and some other nasty side effects.  We will now focus on reading from and writing to some persistent storage. Here we go.
