@@ -151,5 +151,5 @@ But many open questions from the first article remain unanswered. What about tes
 
 More on all of that to come. See you soon!
 
----
+
 [^1]: I'm assuming something similar to an sql database here, and talking about rows, etc. It doesn't matter, for the purpose of this article. We could be speaking of a document database and its documents instead.
