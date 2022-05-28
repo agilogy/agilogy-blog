@@ -22,12 +22,10 @@ layout: post
 	  const matches = document.querySelectorAll("pre>code");
 	  matches.forEach(function(codeBlock) {
 	  	const preBlock = codeBlock.parentNode;
-	  	console.debug(preBlock);
 	  	copyAttributes(preBlock, codeBlock);
         if(!preBlock.hasAttribute('data-runnableIn')) codeBlock.setAttribute('data-highlight-only', 'true');
         else codeBlock.setAttribute('data-target-platform', preBlock.getAttribute('data-runnableIn'));
         if(!preBlock.hasAttribute('lines')) codeBlock.setAttribute('lines', 'true');
-        console.debug('code after  copying attributes: ',codeBlock);
 
       });
 	  KotlinPlayground('code.language-kotlin');
