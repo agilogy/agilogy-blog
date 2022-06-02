@@ -9,8 +9,6 @@ description: >-
 
 Back in the day, we used to just hack some code, run it, and give it some inputs to see whether we acomplished what we wanted or not. Naturally, this is no longer the case, and nowadays we use automated tests to automatically check our code behaves as expected.
 
-{::options syntax_highlighter="nil" /}
-
 <!--more-->
 
 ![Bored Boring GIF - Bored Boring Ntc - Descubre & Comparte GIFs](../assets/bored-boring.gif)

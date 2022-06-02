@@ -5,32 +5,42 @@ layout: post
 <script src="https://unpkg.com/kotlin-playground@1"></script>
 
 <script>
-	function copyAttributes(source, target) {
-	  return Array.from(source.attributes).forEach(attribute => {
-	    target.setAttribute(
-	      attribute.nodeName === 'id' ? 'data-id' : attribute.nodeName,
-	      attribute.nodeValue,
-	    );
-	  });
-	}
-	 
-	document.addEventListener('DOMContentLoaded', function() {
-	  // Kotlin playground is controlled via attributes in the html element
-	  // We can set attributes to the surrounding pre block via block IALS: https://kramdown.gettalong.org/syntax.html#block-ials
-	  // But we can't set them on the inner <code> element
-	  // This code copies existing elements and sets some sane defaults
-	  const matches = document.querySelectorAll("pre>code");
-	  matches.forEach(function(codeBlock) {
-	  	const preBlock = codeBlock.parentNode;
-	  	copyAttributes(preBlock, codeBlock);
-        if(!preBlock.hasAttribute('data-runnableIn')) codeBlock.setAttribute('data-highlight-only', 'true');
-        else codeBlock.setAttribute('data-target-platform', preBlock.getAttribute('data-runnableIn'));
-        if(!preBlock.hasAttribute('lines')) codeBlock.setAttribute('lines', 'true');
+  function copyAttributes(source, target) {
+    return Array.from(source.attributes).forEach(attribute => {
+      target.setAttribute(
+        attribute.nodeName === 'id' ? 'data-id' : attribute.nodeName,
+        attribute.nodeValue,
+      );
+    });
+  }
+
+  function findAncestorNodeWithKotlin(node) {
+    const parent = node.parentNode;
+    if(parent.classList.contains("language-kotlin")) return parent;
+    else return findAncestorNodeWithKotlin(parent);
+  }
+
+  if(!window.matchMedia("(pointer:coarse)").matches){
+   
+  document.addEventListener('DOMContentLoaded', function() {
+    // Kotlin playground is controlled via attributes in the html element
+    // We can set attributes to the surrounding pre block via block IALS: https://kramdown.gettalong.org/syntax.html#block-ials
+    // But we can't set them on the inner <code> element
+    // This code copies existing elements and sets some sane defaults
+    const matches = document.querySelectorAll(".language-kotlin code");
+    matches.forEach(function(codeBlock) {
+      const kotlinNode = findAncestorNodeWithKotlin(codeBlock);
+      copyAttributes(kotlinNode, codeBlock);
+        if(!kotlinNode.hasAttribute('data-runnableIn')) codeBlock.setAttribute('data-highlight-only', 'true');
+        else codeBlock.setAttribute('data-target-platform', kotlinNode.getAttribute('data-runnableIn'));
+        if(!kotlinNode.hasAttribute('lines')) codeBlock.setAttribute('lines', 'true');
 
       });
-	  KotlinPlayground('code.language-kotlin');
-	});
+    KotlinPlayground('div.language-kotlin code');
+    //KotlinPlayground('code.language-kotlin');
+  });
 
+}
 
 // var playground = require('arrow-playground');
 
