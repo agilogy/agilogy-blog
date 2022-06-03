@@ -5,8 +5,6 @@ author: "Jordi Pradel"
 categories: kotlin,testing,databases
 ---
 
-{::options syntax_highlighter="nil" /}
-
 Previously on Agilogy blog...
 
 > What if your function is not deterministic because... it generates random values? Or just because it uses the current system time? And what about it doing some I/O, like reading from the file system, a database or a socket? Even more, what about procedures generating some kind of externally observable effect, like **writing** to the file system or a databse?

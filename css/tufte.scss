@@ -293,12 +293,18 @@ img { max-width: 100%; }
                          position: relative; 
                          }
 
-em.sidenote{
+em.sidenote, em.marginnote{
   font-style: normal;
 }
 
 em.sidenote-number{
   width:0;
+}
+
+p.sidenote, p.marginnote{
+  margin-right: 7%;
+  margin-top: 1.4rem;
+  width: 30%;
 }
 
 li .sidenote, li .marginnote{ margin-right: -80%; } //added to allow for the fact that lists are indented and marginnotes and sidenotes push to right
@@ -337,7 +343,7 @@ div.table-wrapper, table { overflow-x: auto; } //changed all overflow values to 
                                                                           padding-right: 5%;
                                                                         }}
 
-.marginnote code, .sidenote code { font-size: 1rem; } //more .code class removal
+// .marginnote code, .sidenote code { font-size: 1rem; } //more .code class removal
 
 pre { width: 52.5%; //, pre code, p pre code are both selectors in tufte.css - they have been removed here to fix alignment issues
            padding-left: 2.5%;
