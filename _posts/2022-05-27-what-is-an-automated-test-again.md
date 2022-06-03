@@ -20,11 +20,7 @@ I know, I know... But let's revisit how do we test a simple program. Bear with m
 Let's imagine we have a simple function like this one:
 
 ```kotlin
-interface Example{
-  //sampleStart
-  fun sum(a: Int, b: Int): Int
-  //sampleEnd
-}
+fun sum(a: Int, b: Int): Int
 ```
 
 A classical **test suite** is a collection of **test scenarios** each of which tests one combination of inputs to the function following these simple steps:
@@ -36,23 +32,14 @@ Like this:
 
 {: data-runnableIn='junit'}
 ```kotlin
-import org.junit.Assert.assertEquals
-import org.junit.Test
+@Test
+fun testSumPositives() {
+  assertEquals(23, sum(21, 2))
+}
 
-class Example {
-    fun sum(a: Int, b: Int): Int = a + b
-
-    //sampleStart
-    @Test
-    fun testSumPositives() {
-        assertEquals(23, sum(21, 2))
-    }
-
-    @Test
-    fun testSumPositiveAndNegative() {
-        assertEquals(19, sum(21, -2))
-    }
-    //sampleEnd
+@Test
+fun testSumPositiveAndNegative() {
+  assertEquals(19, sum(21, -2))
 }
 ```
 
@@ -84,35 +71,12 @@ The second one is doable by hand with `try ... catch`, although every testing li
 
 {: data-runnableIn='junit'}
 ```kotlin
-import org.junit.Assert.assertEquals
-import org.junit.Test
+fun div(a: Int, b: Int): Int = a / b
 
-class Example {
-    inline fun <reified T : Throwable> assertThrows(
-        executable: () -> Unit
-    ): T =
-        when (val throwable: Throwable? = try {
-            executable()
-        } catch (caught: Throwable) {
-            caught
-        } as? Throwable) {
-            null -> 
-                throw IllegalArgumentException(
-                  "Expected an exception of type ${T::class}"
-                )
-            is T -> throwable
-            else -> throw throwable
-        }
-
-    //sampleStart
-    fun div(a: Int, b: Int): Int = a / b
-
-    @Test
-    fun divBy0() {
-        val t = assertThrows<ArithmeticException> { div(23, 0) }
-        assertEquals("/ by zero", t.message)
-    }
-    //sampleEnd
+@Test
+fun divBy0() {
+  val t = assertThrows<ArithmeticException> { div(23, 0) }
+  assertEquals("/ by zero", t.message)
 }
 ```
 
@@ -120,18 +84,9 @@ There is still a catch. Your function may be non total without you, the poor pro
 
 {: data-runnableIn='junit'}
 ```kotlin
-import org.junit.Assert.assertTrue
-import org.junit.Test
-
-class Example {
-    fun div(a: Int, b: Int): Int = a / b
-
-    //sampleStart
-    @Test
-    fun failingTestDueToUnexpectedException() {
-        assertTrue(div(23, 0) < 23)
-    }
-    //sampleEnd
+@Test
+fun failingTestDueToUnexpectedException() {
+  assertTrue(div(23, 0) < 23)
 }
 ```
 
@@ -163,28 +118,13 @@ But I digress... Let's apply our new algorithm:
 
 {: data-runnableIn='junit'}
 ```kotlin
-import org.junit.Assert.assertEquals
-import org.junit.Test
-
-class MemoryAdderTest {
-    class MemoryAdder {
-        var lastInput: Int = 0
-        fun add(a: Int): Int = (lastInput + a).also { lastInput = a }
-    }
-
-    @Test
-    fun testAdderWithSate() {
-        //sampleStart
-        // 1. Set initial state:
-        val ma = MemoryAdder()
-        ma.add(23)
-        // 2 and 3. Execute the method and assert
-        assertEquals(25, ma.add(2))
-        // 4. Collect the final state and assert
-        assertEquals(2, ma.lastInput)
-        //sampleEnd
-    }
-}
+// 1. Set initial state:
+val ma = MemoryAdder()
+ma.add(23)
+// 2 and 3. Execute the method and assert
+assertEquals(25, ma.add(2))
+// 4. Collect the final state and assert
+assertEquals(2, ma.lastInput)
 ```
 
 Good job! Done, right? Not quite yet...
