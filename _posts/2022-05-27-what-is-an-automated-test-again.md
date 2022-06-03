@@ -1,5 +1,5 @@
 ---
-layout: kotlin-post
+layout: post
 title: What is an automated test, again?
 author: Jordi Pradel
 categories: kotlin,testing
@@ -30,7 +30,7 @@ interface Example{
 A classical **test suite** is a collection of **test scenarios** each of which tests one combination of inputs to the function following these simple steps:
 
 1. Invoke the function with input values defined in the test
-2. Collect the result returned by the function and **assert**[^1] it is what we expect
+2. Collect the result returned by the function and _assert_{: .sidenote-number} _**Asserting** here means that you check the value is what you expected or else make the test fail_{: .sidenote} it is what we expect.
 
 Like this:
 
@@ -64,7 +64,10 @@ Easy peasy! Isn't it?
 
 But, what about impure "functions"? You know I love pure functions, right?
 
-<img src="../assets/agile_jordi.jpg" alt="agile_jordi" style="zoom:70%;" />
+**Functional programmer** with an agile background
+{: .figcaption}
+
+![agile_jordi profile as a functional programmer](../assets/agile_jordi.jpg)
 
 What happens when you want to test something that is not a pure function?
 
@@ -85,13 +88,18 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class Example {
-    inline fun <reified T : Throwable> assertThrows(executable: () -> Unit): T =
+    inline fun <reified T : Throwable> assertThrows(
+        executable: () -> Unit
+    ): T =
         when (val throwable: Throwable? = try {
             executable()
         } catch (caught: Throwable) {
             caught
         } as? Throwable) {
-            null -> throw IllegalArgumentException("Expected an exception of type ${T::class} but none was thrown")
+            null -> 
+                throw IllegalArgumentException(
+                  "Expected an exception of type ${T::class}"
+                )
             is T -> throwable
             else -> throw throwable
         }
@@ -181,12 +189,8 @@ class MemoryAdderTest {
 
 Good job! Done, right? Not quite yet...
 
-What if your function is not deterministic because... it generates random values? Or just because it uses the current system time? And what about it doing some I/O, like reading from the file system, a database or a socket? Even more, what about procedures generating some kind of externally observable effect, like **writing** to the file system or a databse? 🙀 [^2]
+What if your function is not deterministic because... it generates random values? Or just because it uses the current system time? And what about it doing some I/O, like reading from the file system, a database or a socket? Even more, what about procedures generating some kind of externally observable effect, like **writing** to the file system or a databse? _🙀_{: .sidenote-number} _Yes, it's a **cat** screaming. Yes, coming from Scala, that pun is indeed intended. I didn't find any arrow screaming, sorry about that._{: .sidenote}
 
 Let's talk about these dreaded scenarios in our next post about software testing!
 
 I hope you enjoyed this one. See you soon!
-
-
-[^1]: Asserting here means that you check the value is what you expected or else make the test fail
-[^2]: Yes, it's a **cat** screaming. Yes, coming from Scala, that pun is indeed intended. I didn't find any arrow screaming, sorry about that.

@@ -1,0 +1,8 @@
+- link: //www.twitter.com/agilogy
+  icon: icon-twitter
+- link: //github.com/agilogy
+  icon: icon-github
+- link: /feed.json 
+  icon: icon-rss2
+- link: /feed.xml
+  icon: icon-rss2
