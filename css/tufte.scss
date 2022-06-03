@@ -140,15 +140,23 @@ div.epigraph > blockquote { margin-top: 3rem;
                             margin-bottom: 3rem;
                              }
 
+blockquote { margin-top: 3rem;
+  margin-bottom: 3rem;
+}
+
 div.epigraph > blockquote, div.epigraph > blockquote > p { font-style: italic; }
 
-div.epigraph > blockquote > footer {  font-style: normal;
+blockquote, blockquote > p { font-style: italic; }
+
+
+div.epigraph > blockquote > footer, blockquote > p:last-child {  font-style: normal;
                                       width: 45%;
                                       padding-left: 2.5%;
                                       padding-right: 2.5%;
                                       padding-top: 0;
                                       margin-top: 0.4455rem;
                                       margin-bottom: 3.1182rem }
+
 
 div.epigraph > blockquote > footer > cite { font-style: italic; }
 /* end chapter epigraphs styles */
@@ -172,10 +180,11 @@ blockquote footer {  font-size: 1.1rem;
         letter-spacing: .03em; }
 
 pre, pre code, p code, p pre code { font-family: $code-font;  // removed .code 'class' since code is an actual html tag
-        font-size: 0.85rem;                   // also added p code, p pre code and pre selector to account for Markdown parsing
+                           // also added p code, p pre code and pre selector to account for Markdown parsing
         line-height: 1.71428571;        // of triple backticks plus rationalized line-heights and margins
         margin-top: 1.71428571rem; }
 
+code {font-size: 0.85rem;}
 
 
 h1 code, h2 code, h3 code { font-size: 0.80em; } //left in for no real reason
