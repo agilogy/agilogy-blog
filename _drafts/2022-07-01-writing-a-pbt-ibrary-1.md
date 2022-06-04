@@ -3,7 +3,7 @@
 layout: post
 title: Writing a Property Based Testing library in Kotlin, a Journey (part 1)
 author: Jordi Pradel
-categories: [kotlin,propertybasedtesting,pbt,testing]
+categories: [kotlin,propertybasedtesting,pbt,testing,design]
 description: >-
   Let's write a Property Based Testing library in Koglin and see what happens!
 ---
@@ -140,9 +140,11 @@ So we created a minimalist property based testing library that is capable of tes
 
 On top of that, we started writing tests of our property based testing library. I have the intuition that testing a library that generates random values will soon get quite complicated. But, hey, if it were easy it wouldn't be fun!
 
-At the same time, we uncovered several limitations of our property testing function. And we are only capable, so far, of testing properties on Int values. Will our intrepid developers overcome such limitations?
+At the same time, we uncovered several limitations of our property testing function. And we are only capable, so far, of testing properties on Int values. 
 
-Stay tuned!
+You can see the current version of our library at [https://github.com/agile-jordi/wapbtl/tree/part1](https://github.com/agile-jordi/wapbtl/tree/part1).
+
+Will our intrepid developers overcome such limitations? Stay tuned!
 
 ![Batman Robin GIF - Batman Robin Old School - Descubre & Comparte GIFs](../assets/img/same-bat-channel.png)
 

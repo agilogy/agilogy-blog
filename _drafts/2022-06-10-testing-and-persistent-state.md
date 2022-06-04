@@ -2,7 +2,7 @@
 layout: post
 title: Testing and persistent state
 author: Jordi Pradel
-categories: kotlin,testing,databases
+categories: [kotlin,testing,databases]
 description: >-
   Testing with persistent has certain implications. We propose to explicitly set the initial state and to check all of the final state after the test. We also propose to not share your persistent state (by using a not shared database). Finally, we give some thoughts to running multiple tests in parallel when persistent state is involved.
 ---

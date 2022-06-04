@@ -2,7 +2,7 @@
 layout: post
 title:  "Testing other side effects"
 author: "Jordi Pradel"
-categories: kotlin,testing,databases
+categories: [kotlin,testing,databases]
 description: >-
   Trying to test a simple function with side effects takes us to talk about simplicity and, from there, we take the path of design to try to design a simpler solution. That brings us dependency injection. All because we wanted testability.
 ---

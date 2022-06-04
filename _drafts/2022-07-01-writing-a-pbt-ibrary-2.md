@@ -3,12 +3,12 @@
 layout: post
 title: Writing a Property Based Testing library in Kotlin, a Journey (part 2)
 author: Jordi Pradel
-categories: [kotlin,propertybasedtesting,pbt,testing]
+categories: [kotlin,propertybasedtesting,pbt,testing,design]
 description: >-
   Let's write a Property Based Testing library in Koglin and see what happens!
 ---
 
-In our [previous post](/2022-07-01-writing-a-pbt-ibrary-2.html) we developed a minimal Property Based Testing library in Kotlin that was capable of testing properties of `Int` values. Amongst its limitations, I find its inhability to test properties on other types disturbing. So let's add some more `Arb` values to our beloved library.
+In our [previous post](/2022-07-01-writing-a-pbt-ibrary-1.html) we developed a minimal Property Based Testing library in Kotlin that was capable of testing properties of `Int` values. Amongst its limitations, I find its inhability to test properties on other types disturbing. So let's add some more `Arb` values to our beloved library.
 
 ## Simple types
 
