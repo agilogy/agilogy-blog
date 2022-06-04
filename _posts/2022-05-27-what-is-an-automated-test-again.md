@@ -43,7 +43,7 @@ fun testSumPositiveAndNegative() {
 }
 ```
 
-You probably already know, but just in case: ` assertEquals` takes the **expected** value as the **first** argument and the **actual** value, the one your code actually returned, as the **second** argument. Please, please, stop doing the order of those arguments wrong, as failing tests are really confusing when they are switched.
+You probably already know, but just in case: `assertEquals` takes the **expected** value as the **first** argument and the **actual** value, the one your code actually returned, as the **second** argument. Please, please, stop doing the order of those arguments wrong, as failing tests are really confusing when they are switched.
 
 Easy peasy! Isn't it?
 
