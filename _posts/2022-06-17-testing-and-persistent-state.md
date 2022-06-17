@@ -65,7 +65,7 @@ Nice, no? Nope. You may already know me. Sparing English not being my native ton
 Side effects everywhere
 {:.figcaption}
 
-![side effects](../assets/side effects.gif)
+![side effects](../assets/side%20effects.gif)
 
 What's the problem with that, you say? After all, some projects out there forget to test the final state and many of the ones that don't,  check it like we did above. The problem, as you may already see, are... unintended side effects.
 

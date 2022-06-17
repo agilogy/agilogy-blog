@@ -2,7 +2,7 @@
 layout: post
 title: What is an automated test, again?
 author: Jordi Pradel
-categories: kotlin,testing
+categories: [kotlin,testing]
 description: >-
   The basic automated testing recipe seems well-known and simple, but it is not sufficient when the system under test is not a pure function. Testing non-total functions is quite well understood. Testing systems with state is a bit more complicated and important details are often overlooked. At Agilogy, our approach to test such systems with state is to explicitly set the initial state of the system before exercising whatever functionality we want to test, and to also get and make assertions about the final state in addition to the usual assertions about any response or returned value. We show this approach applied to one simple toy function and we do so in Kotlin.
 ---
