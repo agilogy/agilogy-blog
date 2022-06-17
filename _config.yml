@@ -1,4 +1,4 @@
-baseurl: 
+# baseurl:
 title: Agilogy
 subtitle: A blog about code and the people making it
 author: Agilogy
@@ -7,7 +7,7 @@ description:
 name: agilogy
 markdown: kramdown
 markdown_ext: "markdown,mkdown,mkdn,mkd,md"
-permalink: /:year-:month-:day-:title:output_ext
+permalink: "/:year-:month-:day-:title:output_ext"
 timezone: Europe/Madrid
 excerpt_separator: <!--more-->  # you can specify your own separator, of course.
 exclude: ['Gemfile', 'Gemfile.lock', 'Rakefile', 'UploadToGithub.Rakefile', 'README.md']
@@ -19,3 +19,6 @@ page:
   extension: md
 git:
   branch: master
+url: "https://blog.agilogy.com"
+plugins:
+  - jekyll-sitemap
