@@ -22,3 +22,4 @@ git:
 url: "https://blog.agilogy.com"
 plugins:
   - jekyll-sitemap
+  - jekyll-seo-tag
