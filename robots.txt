@@ -1,1 +1,1 @@
-Sitemap: http://blog.agilogy.com/sitemap.xml
+Sitemap: https://blog.agilogy.com/sitemap.xml
