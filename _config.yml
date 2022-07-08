@@ -18,8 +18,9 @@ page:
   template: _page.txt
   extension: md
 git:
-  branch: master
+  branch: main
 url: "https://blog.agilogy.com"
 plugins:
+  - jekyll-last-modified-at
   - jekyll-sitemap
   - jekyll-seo-tag
