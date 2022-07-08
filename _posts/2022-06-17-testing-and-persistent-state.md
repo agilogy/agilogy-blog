@@ -188,3 +188,7 @@ So we are now equiped with the perfect recipe to run tests that use persistent s
 But many open questions from the first article remain unanswered. What about testing a function that gets the current time? One that uses random values? What about something that sends HTTP requests to the world?
 
 More on all of that to come. See you soon!
+
+## Other articles in the series
+
+1. [What is an automated test, again?](./2022-05-27-what-is-an-automated-test-again.html)
