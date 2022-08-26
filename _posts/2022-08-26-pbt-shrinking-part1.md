@@ -59,7 +59,7 @@ testAll(itemSearchCriteriaArb) { searchCriteria ->
 }
 ```
 
-And let's say you have a failing test with this sample, that returns items whose weight is more than `110`.
+Assume we get a failing test with the following sample, for which our function returns items with weight above `110`.
 
 ```kotlin
 ItemSearchCriteria(ItemFilter(23, 110, 2022-01-01T00:00:00.000, setOf(Tag.clothes, Tag.exclusive)), AgetItemOrder)
