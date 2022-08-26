@@ -76,7 +76,7 @@ In our example, we found a test that fails when the randomly search criteria are
 
 Of course we may notice that the returned items all have a weight above 110 and we would be done. But that may be difficult to realize. Imagine your search returns hundreds or thousands of items and that each item, instead of a blog example is a complex entity. Now you are probably facing a daunting screen of thousands of lines printing the returned examples and it is difficult to see what of the filters they fail to satisfy.
 
-The problem is that the example for which we got a failure is way too complex. We have (potentially) a lot of distracting values that don't matter for the bug at hand. Knowing what the bug is, you and me know that it doesn'm matter wether you filter by `olderThan` or not. Knowing what the bug is, if I asked you, a wonderful and smart human being, what the simplest counter-example is, you would probably give me something like `ItemSearchCriteria(ItemFilter(null, 0, null, emptySet()), Indifferent)`.
+The problem is that the example for which we got a failure is way too complex. We have (potentially) a lot of distracting values that don't matter for the bug at hand. Knowing what the bug is, you and me know that it doesn't matter wether you filter by `olderThan` or not. Knowing what the bug is, if I asked you, a wonderful and smart human being, what the simplest counter-example is, you would probably give me something like `ItemSearchCriteria(ItemFilter(null, 0, null, emptySet()), Indifferent)`.
 
 You are indeed smart... but, out there, you don't know what the bug is in advance. So let's try to simplify the example bit by bit.
 
@@ -107,7 +107,7 @@ ItemSearchCriteria(ItemFilter(null, null, 2022-01-01T00:00:00.000, setOf(Tag.clo
 <img src="https://c.tenor.com/TlfAvuz0tLMAAAAC/obi-wan-kenobi-these-are-not-the-droids.gif">
 {:.figcaption}
 
-3️⃣ ✅ Woa! That one passes the tests! This is already a very good hint! We may have a bug in `maxWeightInKgs`. But what about the other filters? Are they related to the failure? Our example is still not as nice as the one we know we want if we know where the bug is. At the same time, as this example didn't fail, I wouldn't probably keep shrinking it. It is probably ok in all of this subtree. In other terms, `maxWeightInKgs`to `null` opens a path (that would admit more simplifications) where our bug is not manifested. These are not the examples we are looking for. 
+3️⃣ ✅ Woa! That one passes the tests! This is already a very good hint! We may have a bug in `maxWeightInKgs`. But what about the other filters? Are they related to the failure? Our example is still not as nice as the one we know we want if we know where the bug is. At the same time, as this example didn't fail, I wouldn't probably keep shrinking it. In other terms, setting `maxWeightInKgs` to `null` opens a path (that would admit more simplifications) where our bug is not manifested. These are not the examples we are looking for. 
 
 But we can try to keep simplifying 2️⃣ to check wether `olderThan` and `hasAllTags` are unrelated. So, let's try to remove `olderThan`:
 
@@ -131,7 +131,7 @@ ItemSearchCriteria(ItemFilter(null, null, null, emptySet()), null)
 ```
 6️⃣ ✅ The test now succeeds. `maxWeightInKgs` definetively seems the cause of our trouble.
 
-So the simplest example we've got so far is example 5️⃣ and. But we can play this game even further. Do we have a problem with the number `110`? Or any number would fail? As humans, round decimal numbers and numbers closer to 0 seem simpler, so we could keep shrinking this example to test for `maxWeightInKgs` `100` 7️⃣, `50` 8️⃣, `0` 9️⃣ and it would still fail. So we got:
+So the simplest example we've got so far is example 5️⃣. But we can play this game even further. Do we have a problem with the number `110`? Or any number would fail? As humans, round decimal numbers and numbers closer to 0 seem simpler, so we could keep shrinking this example to test for `maxWeightInKgs` `100` 7️⃣, `50` 8️⃣, `0` 9️⃣ and it would still fail. So we got:
 
 ```kotlin
 ItemSearchCriteria(ItemFilter(null, 0, null, emptySet()), null)
@@ -163,7 +163,7 @@ We did this more or less by hand. But, hey, there is a reason they taught you ho
 
 ## Conclusions
 
-We have seen how property based testing may provide us complex examples of inputs for which our program doesn't satisfy the property we expect it too. In other words, randomly generated of inputs that make our tests fail.
+We have seen how property based testing may provide us complex examples of inputs for which our program doesn't satisfy the property we expect it too. That is, randomly generated of inputs that make our tests fail.
 
 Once we have one such example it may be difficult to diagnose what the bug was. One strategy we may use is to simplify or shrink our example to get the simplest example we can that still fails. That can be useful to reason about what is failing but also to debug our program with less distracting inputs, for example.
 
