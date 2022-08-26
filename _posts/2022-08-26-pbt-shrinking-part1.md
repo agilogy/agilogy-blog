@@ -126,7 +126,7 @@ ItemSearchCriteria(ItemFilter(null, 110, null, emptySet()), null)
 
 What about going one step further? 
 
-```
+```kotlin
 ItemSearchCriteria(ItemFilter(null, null, null, emptySet()), null)
 ```
 6️⃣ ✅ The test now succeeds. `maxWeightInKgs` definetively seems the cause of our trouble.
