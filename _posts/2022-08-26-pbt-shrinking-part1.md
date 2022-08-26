@@ -14,7 +14,7 @@ In this article I will focus on what happens when the property does not hold and
 
 ## Example: searching for items
 
-Let's say you have items in some repository represented here as a _the function `searchItems`_{:.sidenote-number} _For the sake of simplification we will assume this repository has a fixed, hardcoded state, a number of hardcoded items so it can be represented as a pure function and we don't have to deal with state._{:.sidenote}:
+Let's say you have items in some repository represented here as a _the function `searchItems`_{:.sidenote-number} _For the sake of simplification we will assume this repository has a fixed, hardcoded state, a number of hardcoded items so it can be represented as a pure function and we don't have to [deal with state](2022-06-17-testing-and-persistent-state.html)._{:.sidenote}:
 
 ```kotlin
 data class Tag(val value: String)
