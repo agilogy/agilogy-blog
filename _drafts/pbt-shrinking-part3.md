@@ -1,53 +1,19 @@
 ---
-layout: kotlin-post
-title:  "Property based testing: Shrinking"
+layout: post
+title:  "Property based testing: Shrinking (part 1)"
 date:   2022-05-15 19:01:57 +0200
 categories: kotlin
 ---
 
-{::options syntax_highlighter="nil" /}
-
-
-When using property based testing, you are basically running the same test a great number of times, each with a randomly generated input and state. Whenever the test finds a value for which the test fails, it informs what the randomly generated test inputs where so that you can reason about what went wrong. But that sample may be very complex and maybe there are simpler values that also fail the test. Shrinking is a feature of property based testing libraries that tries to find such a simpler failing value.
-
-Let's say you are testing a function to search items in some repository:
-
-```kotlin
-suspend fun searchItems(criteria: ItemSearchCriteria): List<Item>
-data class ItemSearchCriteria(val filter: ItemFilter, val order: ItemOrder)
-data class ItemFilter(minWeightInKgs: Int?, maxWeightInKgs: Int?, olderThan: Instant?, hasAllTags: Set<Tag> = emptySet())
-interface ItemOrder {
-  companion object{
-    object Indifferent: ItemOrser { ... }
-    object Age: ItemOrder {...}
-    object Weight: ItemOrder {...}
-  }                     
-}
-
-```
-
-And let's say you have a failing test with this sample:
-
-```kotlin
-ItemSearchCriteria(ItemFilter(23, 110, 2022-01-01T00:00:00.000, setOf(Tag.clothes, Tag.exclusive)), AgetItemOrder)
-```
-
-Now you know that the `searchItem` function is not behaving correctly with this particular example. But would it still fail with a simpler inputs? Would it still fail if we used a different order, like ItemOrder.Id? If not, probably the order is the issue. Would it still fail if we didn't filter by minWeightInKgs nor maxWeightInKgs? If not, the issue is probably related to those filters.
-
-To help us finding a simple example that causes our test to fail, PBT libraries may use a couple of strategies:
-
-1. Build and test examples from simpler ones to more complex ones, thus failing always with a simple example
-2. Once a random example fail, try to _shrink_ it, searching for the simplest value that still fails
-
-This article focuses on shrinking.
+## Shrinking in PBT libraries
 
 The intuitive idea of shrinking consists of reducing the _size_ of a value. Let's take the set of tags we want to use to filter items: `Set(Tag.clothes, Tag.exclusive)`. We could shrink it by removing elements from the set. Acording to this idea, `setOf(Tag.clothes)` would be intuitively one step smaller than the original value, as it would be `setOf(Tag.exclusive)`. If any of those simpler values still failed the test, we could shrink further by taking `emptySet()`, which would be 2 _steps_ smaller than the original value.
 
-## Shrinking in PBT libraries
-
-For the library to be able to shrink values of some type `T`, it needs some function that allows us to shrink a value of type `T`. Like it happens with the example above, there may be more than one way to shrink such a value. The `ItemFilter` type, for example, may be shrinked by shrinking `minWeightInKgs`, `maxWeightInKgs`, `olderThan` or `hasAllTags`. At the same time, there may be multiple ways to shrink each of this components.
+For the library to be able to shrink values of some type `T`, it needs some function that allows us to shrink a value of type `T`. Like it happens with the example above, there may be more than one way to shrink such a value. The `ItemFilter` type, for example, may be shrinked by shrinking `minWeightInKgs`, `maxWeightInKgs`, `olderThan` or `hasAllTags`. At the same time, there may be multiple ways to shrink each of these components.
 
 Therefore, the shrinking function should be a function from `T` to a `List` of possible one-step shrinkings of T. For each of these shrinked values, we can apply the shrinking function to get a new List of possible two-step shrinkings. The recursive application of the shrinking function gives us a (potentially very large) shrinking tree.
+
+
 
 Therefore, there is a way of attaching a shrinking function to a generator:
 
@@ -80,8 +46,3 @@ How does that change our problem? Now, for any given `Gen<A>` you can `map` with
 ## Generalizing shrinking
 
 - TODO: ADTs: Union types + product types
-
-
-
-
-
