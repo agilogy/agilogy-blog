@@ -3,14 +3,14 @@ layout: post
 mermaid: true
 title:  "Property based testing: Shrinking (part 1)"
 author: Jordi Pradel
-categories: [kotlin,testing]
+categories: [kotlin,testing, pbt]
 description: >-
   When a property test fails it provides an example for which our program doesn't behave. That randomly generated example may be too complex to diagnose the problem. Shrinking allows us to build simpler examples that still fail our tests, allowing for simpler reaasoning and debugging.
 ---
 
 As you may already know, Property Based Testing (PBT) is an automated testing technique where you test properties of your programs or functions instead of testing particular examples like we do in classical unit testing. A PBT library allows you to program properties (e.g. "for all integers `i` such that `i != 0`, `0 / i = 0`") and generators of values that generate random valid examples (e.g. a generator of integers `i` such that `i != 0`). It then checks that your programa abides by the property you defined for _many_{:.sidenote-number} _How many are "many examples"? This is a matter of a different post._{:.sidenote} generated random examples, assuming that if no counter-example is found after a number of attempts bigger enough, the property is true. Such properties can be written as tests that, instead of hard-coded examples, use randomly generated inputs (and [initial state](2022-05-27-what-is-an-automated-test-again.html)); we will say a property holds for a given example if the test doesn't fail. 
 
-In this article I will focus on what happens when the property does not hold and an example is found that fails the test. In traditional automated testing, we only need to know which of our test scenarios failed an assertion (and why), as the test has hard-coded examples we can reason about. But in PBT, beyond the property that failed and the reason of the failure (the assertion that failed), we may need to know what particular counter-example was found. Unfortunately, that randomly generated example may be very complex and there may be simpler values that also fail the test. Shrinking is a feature of property based testing libraries that tries to find such a simpler failing value.
+In this article I will focus on what happens when the property does not hold and an example is found that fails the test. In traditional automated testing, we only need to know which of our test scenarios failed an assertion (and which one), as the test has hard-coded examples we can reason about. But in PBT, beyond the property that failed and assertion, we may need to know what particular counter-example was found. Unfortunately, that randomly generated example may be very complex and there may be simpler values that also fail the test. Shrinking is a feature of property based testing libraries that tries to find such a simpler failing value.
 
 ## Example: searching for items
 
@@ -119,7 +119,7 @@ ItemSearchCriteria(ItemFilter(null, 110, null, setOf(Tag.clothes, Tag.exclusive)
 
 
 ```kotlin
-ItemSearchCriteria(ItemFilter(null, 110, null, emptySet()), null)
+ItemSearchCriteria(ItemFilter(null, 110, null, emptySet()), Indifferent)
 ```
 
 5️⃣ 🔥 `hasAllTags` seems unrealted to the failure too.
@@ -127,14 +127,14 @@ ItemSearchCriteria(ItemFilter(null, 110, null, emptySet()), null)
 What about going one step further? 
 
 ```kotlin
-ItemSearchCriteria(ItemFilter(null, null, null, emptySet()), null)
+ItemSearchCriteria(ItemFilter(null, null, null, emptySet()), Indifferent)
 ```
 6️⃣ ✅ The test now succeeds. `maxWeightInKgs` definetively seems the cause of our trouble.
 
 So the simplest example we've got so far is example 5️⃣. But we can play this game even further. Do we have a problem with the number `110`? Or any number would fail? As humans, round decimal numbers and numbers closer to 0 seem simpler, so we could keep shrinking this example to test for `maxWeightInKgs` `100` 7️⃣, `50` 8️⃣, `0` 9️⃣ and it would still fail. So we got:
 
 ```kotlin
-ItemSearchCriteria(ItemFilter(null, 0, null, emptySet()), null)
+ItemSearchCriteria(ItemFilter(null, 0, null, emptySet()), Indifferent)
 ```
 
 Assuming 0 is the simplest value for the `maxWeightInKgs`filter (other than null), the example we have can't be further simplified.
@@ -163,9 +163,7 @@ We did this more or less by hand. But, hey, there is a reason they taught you ho
 
 ## Conclusions
 
-We have seen how property based testing may provide us complex examples of inputs for which our program doesn't satisfy the property we expect it too. That is, randomly generated of inputs that make our tests fail.
-
-Once we have one such example it may be difficult to diagnose what the bug was. One strategy we may use is to simplify or shrink our example to get the simplest example we can that still fails. That can be useful to reason about what is failing but also to debug our program with less distracting inputs, for example.
+We have seen how property based testing gives us complex examples of inputs for which our program doesn't satisfy the property we expect it to. Once we have one such example it may be difficult to diagnose what the bug was. One strategy we may use is to simplify or shrink our example to get simpler examples that still fail. That can be useful to reason about what is failing but also to debug our program with less distracting inputs, for example.
 
 In the next post in the series we'll discuss how a property based testing library can automate this shrinking and what are the difficulties of doing so.
 
