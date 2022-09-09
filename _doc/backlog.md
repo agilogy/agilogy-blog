@@ -2,6 +2,7 @@
 
 ## Decissions
 
+- [ ] https://developer.twitter.com/en/docs/twitter-for-websites/tweet-button/overview
 - [ ] Choose catalan, spanish or english? Or translate? Can automatically translate?
 - [ ] Types of articles
   - Some easy hand-on articles. e.g. Property testing with Kotest
@@ -21,3 +22,5 @@
 - [ ] [Aquí](../_drafts/testing-and-persistent-state.md) dic "You wouldn't have `Connection` as a parameter of this function? Nice, me neither. ... I plan to write about dependency injection using this very example as our starting point."
 - [ ] El biaix de les proves cap al verd: els desenvolupadors volem que surtin en verd, però si totes les proves sortissin sempre en verd és que hem estat perdent el temps escrivint-les
 - [ ] A series on building a property based testing framework in Kotlin
+- [ ] Deriving shrinking functions
+- [ ] Testing pbt generators and shrinking functions

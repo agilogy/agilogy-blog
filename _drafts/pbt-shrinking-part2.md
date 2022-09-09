@@ -45,13 +45,13 @@ type ShrinkFunction<A> = (A) -> List<A>
 
 A shrinking function takes the value you want to shrink and returns a list of **_one-step_** shrinks from that value. 
 
-The shrink function must return a list of values because there may be multiple different ways of shrinking the same value. In our exmple, when simplifying `ItemFilter`we could remove `minWeightInKgs`, `maxWeightInKgs`, `olderThan`or `hasAllTags`and each one gives us a different simplification.
+The shrink function must return a list of values because there may be multiple different ways of shrinking the same value. In our exmple, when simplifying `ItemFilter` we could remove `minWeightInKgs`, `maxWeightInKgs`, `olderThan` or `hasAllTags` and each one gives us a different simplification.
 
 On the other hand, it is important that the shrink function only returns different ways of slightly shrink a value, since the shrinking tree will be built by recursively applying the shrink function to a shrinks of the list when needed. In our example, when simplifying `ItemFilter` we don't need to remove combinations of more than one filter (like removing both `minWeightInKgs` and `maxWeightInKgs`) as that example will be obtained by further simplifying an example where we first removed just one filter.
 
 ## Shrinking simple types
 
-GIven such a definition, the PBT library can define shrink functions for some ubiquitous simple types like `Int` or  `Instant`{:.sidenote-number} _Unrelated: Because you know and use `Instant`, right? You know `DateTime` does not correctly represent when something happened but else what did the clocks somewhere in the world displayed when that happened, right?_{:.sidenote}.
+Given such a definition, the PBT library can define shrink functions for some ubiquitous simple types like `Int` or  `Instant`{:.sidenote-number} _Unrelated: Because you know and use `Instant`, right? You know `DateTime` does not correctly represent when something happened but else what did the clocks somewhere in the world displayed when that happened, right?_{:.sidenote}.
 
 An example naive implementation of `Int` shrinking may be:
 
@@ -101,7 +101,7 @@ That is, you can shrink the nullable value to null or either try to shrink it as
 
 ### Divertimento: Playing with functions
 
-Now that I already introduced a _high order function_ (nullableShrinks is a function that takes a function as a parameter) allow me to dig deeper. I can't help fut do some functional programming here. You can skip this part if you are already tired of me selling this drug:
+Now that I already introduced a _high order function_ (nullableShrinks is a function that takes a function as a parameter) allow me to dig deeper. I can't help but do some functional programming here. You can skip this section if you are already tired of me selling this drug:
 
 First let's redefine `nullableShrinks` to not only take a function as a parameter but to also return one. The idea is that it only takes the not null shrinking function (without the value to shrink) and it returns the shrinking function:
 
@@ -148,7 +148,7 @@ val itemFilterShrinks: ShrinkFunction<ItemFilter> = { value ->
 }
 ```
 
-But why not use the nice `nullableIntShrink`we just defined, instead of just trying `minWeightInKgs=null`? In fact, for each parameter we could try all the shrink values its shrink function provides. Assuming we also have an `instantShrinks`, we could do something like:
+But why not use the nice `nullableIntShrink` we just defined, instead of just trying `minWeightInKgs=null`? In fact, for each parameter we could try all the shrink values its shrink function provides. Assuming we also have an `instantShrinks`, we could do something like:
 
 ```kotlin
 val itemFilterShrinks: ShrinkFunction<ItemFilter> = { value ->
@@ -206,7 +206,7 @@ When I've found a bug in one of our shrink functions, it usually goes like this:
 
 So, I know, I don't like bugs and I'm complaining like that was your fault. But, "hey, Jordi!" - you say - "good programmers write tests". And tests I write, indeed. But I want my shrinks to properly shrink whatever input I provide, and I'm not in the mood to be just writing examples and the shrinking and I expect of them.
 
-I'm leaving the mystery about how we test our shrinkers for a different post. Suffice to say that it is not easy. And, incase you want one spoiler, we don't test in isolation but integrated in the PBT library, that applies them repeatedly in search for the simplest example.
+I'm leaving the mystery about how we test our shrinkers for a different post. Suffice to say that it is not easy. And, in case you want one spoiler, we don't test in isolation but integrated in the PBT library, that applies them repeatedly in search for the simplest example.
 
 ### Repetition, repetition, repetition
 
