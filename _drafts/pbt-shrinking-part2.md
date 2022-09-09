@@ -45,7 +45,7 @@ type ShrinkFunction<A> = (A) -> List<A>
 
 A shrinking function takes the value you want to shrink and returns a list of **_one-step_** shrinks from that value. 
 
-The shrink function must return a list of values because there may be multiple different ways of shrinking the same value. In our exmple, when simplifying `ItemFilter` we could remove `minWeightInKgs`, `maxWeightInKgs`, `olderThan` or `hasAllTags` and each one gives us a different simplification.
+The shrink function must return a list of values because there may be multiple different ways of shrinking the same value. In our example, when simplifying `ItemFilter` we could remove `minWeightInKgs`, `maxWeightInKgs`, `olderThan` or `hasAllTags` and each one gives us a different value..
 
 On the other hand, it is important that the shrink function only returns different ways of slightly shrink a value, since the shrinking tree will be built by recursively applying the shrink function to a shrinks of the list when needed. In our example, when simplifying `ItemFilter` we don't need to remove combinations of more than one filter (like removing both `minWeightInKgs` and `maxWeightInKgs`) as that example will be obtained by further simplifying an example where we first removed just one filter.
 
@@ -77,7 +77,7 @@ graph LR
   27 --> 13 --> 6
 ```
 
-We can go as far as we want here. Depending on your use case, you could also simply rule that the only simplification of an `Int` value you want to try is `0`, simplifying things. But most of the time you can rely on the shrinking function provided by your PBT library and call it a day.
+We can go as far as we want here. Depending on your use case, you could also simply rule that the only shrink of an `Int` value you want to try is `0`, simplifying things. But most of the time you can rely on the shrinking function provided by your PBT library and call it a day.
 
 ## Shrinking nullable types
 
@@ -87,12 +87,12 @@ Trying to generalize generic shrinks seems also easy for nullable types:
 fun <A> shrinks(value: A?): List<A?> = listOf(null)
 ```
 
-But, "Wait a minute!" - you say. Then, the shrinks for `55` of type `Int` are `listOf(7,27)` but the shrinks for 55 of type `Int?` are just `listOf(null)`? And you are right, we seem to loose the capacity we had to shrink other types when they are nullable. So let's try to generalize that to a type that already has a shrinking function:
+But, "Wait a minute!" - you say. Then, the shrinks for `55` of type `Int` are `listOf(7,27)` but the shrinks for 55 of type `Int?` are just `listOf(null)`? And you are right, we are loosing the nice shrink function we already have for a type and not applying it to the nullable version of it. So let's try to generalize that to a type that already has a shrinking function:
 
 ```kotlin
-fun <A> nullableShrinks(value: A?, notNullShrinkF: (A) -> List<A>): List<A?> = 
+fun <A> nullableShrinks(value: A?, notNullShrinks: (A) -> List<A>): List<A?> = 
   if (value == null) emptyList() 
-  else listOf(null) + notNullShrinkF(value)
+  else listOf(null) + notNullShrinks(value)
 
 fun nullableIntShrinks(value: Int?) = nullableShrinks(value, ::intShrinks)
 ````
@@ -106,8 +106,8 @@ Now that I already introduced a _high order function_ (nullableShrinks is a func
 First let's redefine `nullableShrinks` to not only take a function as a parameter but to also return one. The idea is that it only takes the not null shrinking function (without the value to shrink) and it returns the shrinking function:
 
 ```kotlin
-fun <A> nullableShrinks(notNullShrinkFunction: (A) -> List<A>): <A> -> List<A?> = { a ->
-  if (a == null) emptyList() else listOf(null) + notNullShrinkF(a)
+fun <A> nullableShrinks(notNullShrinks: (A) -> List<A>): <A> -> List<A?> = { a ->
+  if (a == null) emptyList() else listOf(null) + notNullShrinks(a)
 }
 val nullableIntShrinks: (Int?) -> List<Int?> = nullableShrinks(::intShrink)
 ```
@@ -115,10 +115,9 @@ val nullableIntShrinks: (Int?) -> List<Int?> = nullableShrinks(::intShrink)
 Oh! I forgot our nice type alias:
 
 ```kotlin
-fun <A> nullableShrinks(
-  notNullShrinkFunction: ShrinkFunction<A>
-): ShrinkFunction<A?> = { a ->
-  if (a == null) emptyList() else listOf(null) + notNullShrinkF(a)
+fun <A> nullableShrinks(notNullShrinks: ShrinkFunction<A>):
+  ShrinkFunction<A?> = { a ->
+  if (a == null) emptyList() else listOf(null) + notNullShrinks(a)
 }
 val nullableIntShrinks: ShrinkFunction<Int?> = nullableShrinks(::intShrink)
 ```
@@ -140,7 +139,7 @@ And now, we can imagine ourselves, users of the PBT library, implementing shrink
 ```kotlin
 val itemFilterShrinks: ShrinkFunction<ItemFilter> = { value ->
     listOf(
-	    value.copy(minWeightInKgs = null),
+      value.copy(minWeightInKgs = null),
       value.copy(maxWeightInKgs = null),
       value.copy(olderThan = null),
       value.copy(hasAllTags = emptySet())
@@ -155,16 +154,13 @@ val itemFilterShrinks: ShrinkFunction<ItemFilter> = { value ->
     // Either shrink minWeightInKg
     ::intShrinks.nullable(value.minWeightInKgs).map { i -> 
       value.copy(minWeightInKgs = i) 
-    } +
-    // or maxWeightInKg...
+    } + // or maxWeightInKg...
     ::intShrinks.nullable(value.maxWeightInKgs).map { i -> 
       value.copy(maxWeightInKgs = i) 
-    } +
-    // or olderThan...
+    } + // or olderThan...
     instantShrink.nullable(value.olderThan).map { i ->
       value.copy(olderThan = i) 
-    } +
-    // or hasAllTags...
+    } + // or hasAllTags...
     listOf(value.copy(hasAllTags = emptySet()))
 }
 ```
@@ -186,12 +182,12 @@ Let's look at these 2 problems in isolation:
 
 _Learn from the incredible shrinking man: A bug while playing with shrinking is much more dangerous!_{:.figcaption}
 
-The user provided shrink functions are... functions, indeed. And they are code. And code has bugs. But these are a insidious type of bugs, as they only show when you are already trying to understand and fix a failing test that may be as well a bug. Yikes! So, in your happy path, you won't be running your shrink functions (neither in production nor in tests). They will run only when you have some test failure.
+The user provided shrink functions are... functions, indeed. And they are code. And code has bugs. But these are an insidious type of bugs, as they only show when you are already trying to understand and fix a failing test that may be as well a bug. Yikes! So, in your happy path, you won't be running your shrink functions (neither in production nor in tests). They will run only when you have some test failure.
 
 When I've found a bug in one of our shrink functions, it usually goes like this:
 
 1. I get a PBT test failure and the example causing the failure is complex but the shrinking function does not work, so I get another complex example.
-2. I groan. No, not now!
+2. I groan. Oh no! Not now!
 3. I try to get by without shrinking and try to understand the complex example that fails my test. 
 4. If I do not despair:
     - 4.1. I fix whatever the test or the production code causing my original test failure
@@ -204,7 +200,7 @@ When I've found a bug in one of our shrink functions, it usually goes like this:
 
 ### Solving the buggy shrinkers problem
 
-So, I know, I don't like bugs and I'm complaining like that was your fault. But, "hey, Jordi!" - you say - "good programmers write tests". And tests I write, indeed. But I want my shrinks to properly shrink whatever input I provide, and I'm not in the mood to be just writing examples and the shrinking and I expect of them.
+So, I know, I don't like bugs and I'm complaining like that was your fault. But, "hey, Jordi!" - you say - "good programmers write tests". And tests I write, indeed. But I want my shrinks to properly shrink whatever input I provide, and I'm not in the mood to be just writing examples and the shrinking I expect of them.
 
 I'm leaving the mystery about how we test our shrinkers for a different post. Suffice to say that it is not easy. And, in case you want one spoiler, we don't test in isolation but integrated in the PBT library, that applies them repeatedly in search for the simplest example.
 
@@ -228,8 +224,7 @@ val itemSearchCriteriaShrinks: ShrinkFunction<ItemSearchCriteria> = { value ->
     // Either shrink filter
     itemFilterShrinks(value.filter).map { f -> 
       value.copy(filter = f) 
-    } +
-    // or order...
+    } + // or order...
     itemOrderShrinks(value.order).map { o -> 
       value.copy(order = o) 
     }
@@ -244,7 +239,7 @@ Our shrinking functions heaven would be to automatically derive the shrinking fu
 
 ## Conclusions
 
-1. Jordi can't explain shrinking in just 2 blog posts. He'll need like... what, 4 of them? More? In my defense I must say it is not a problem of the written language. When I talk I tend to spend hours to explain anything I'm passionate about, as well, as my unfortunate team colleagues already know. It _could be_ related to the English language; if that is the case I apologize, as I'm afraid I may be [smarter in catalan or spanish](https://www.youtube.com/watch?v=pltc5rtoskM).
-2. Shrinking functions are promising... but this blog post leaves the reader with a sense of unsafety. Does all this effort worth it? Will we be able to use shrinking or even property based testing without spending lots of hours in doing so? Will the benefit overcome the costs? Many teams I worked with seemed to think they wouldn't until they started using property based testing with a proper shrinking infrastructure... and they loved it. So, please, keep reading this series. I'll try my best to keep writing them. 
-3. If you were into some more seriousness in the conclusions I'm sorry to disapoint you. I was in the mood for some more jokes. But please, do complain via Twitter.  After all, you seem to be reading the last few words of the article, so you deserve my apologies.
+1. Jordi can't explain shrinking in just 2 blog posts. He'll need like... what, 4 of them? More? In my defense I must say it is not a problem of the written language. When I talk I tend to spend hours to explain anything I'm passionate about, as well. It _could be_ related to my (not so great) knowledge of the English language; if that is the case I apologize, as I'm afraid I may be [smarter in catalan or spanish](https://www.youtube.com/watch?v=pltc5rtoskM).
+2. Shrinking functions are promising... but this blog post leaves the reader with a sense of unsafety. Is all this effort worth it? Will we be able to use shrinking or even property based testing without spending lots of hours in doing so? Will the benefit overcome the costs? Many teams I worked with weren't sure it wouldn't pay off until they started using property based testing with a proper shrinking infrastructure... and they loved it. So, please, keep reading this series. I'll try my best to keep writing them. 
+3. If you were expecting some more seriousness in the conclusions I'm sorry to disapoint you. I was in the mood for some more jokes. But please, do complain via Twitter.  After all, you went far enough to be reading the last few words of the article, so you deserve my apologies.
 
