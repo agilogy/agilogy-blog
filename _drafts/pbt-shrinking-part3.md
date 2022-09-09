@@ -5,6 +5,36 @@ date:   2022-05-15 19:01:57 +0200
 categories: kotlin
 ---
 
+### When to stop searching?
+
+One usual strategy is to return the last failing example once we find an example that passes the build. Unfortunately, in our example that would give us example 2️⃣, as that is the last failing example we find before a successful one (3️⃣). That example corresponded to `ItemSearchCriteria(ItemFilter(null, 110, 2022-01-01T00:00:00.000, setOf(Tag.clothes, Tag.exclusive)), Indifferent)`, which is far from the simplest example we may find. 
+
+Other, smarter, strategies are possible. We can look afer an example that fails and can't be shrinked further, like :nine: above. But we may find that a shrinkeable example fails but every possible shrinking we attempt passes the tests. In such cases, we can finish searching too, but we may end up with an example that is a local min, like _A below_{:.sidenote-number} _We can't find simpler examples than A in its path, but C is simpler (and may be even further shrinkable)._{:.sidenote}:
+
+```mermaid
+graph LR
+	0[initial &#x1F525] --> A[A &#x1F525] --> AOthers[... all &#x2705]
+  0 --> B[B &#x1F525] --> C[C &#x1F525] --> COthers[...]
+
+```
+
+In my opinion, the best strategy is to keep searching, even when an example has all its shrinks pass the test, until some condition. It may be a maximum number of examples attempted or, even better, the _maximum amount of time devoted to shrinking_{:.sidenote-number}: _None of the Kotlin or Scala property based testing libraries I know implements an strategy like that. But we have successfully implemented one on top of [kotest](https://kotest.io/) by rewriting an important part of their engine._{:.sidenote}
+
+```kotlin
+testAll(itemSearchCriteriaArb, shrinkUntil = StopCondition.after(3.minutes)) { 
+  searchCriteria ->
+    val result = searchItems(searchCriteria)
+    val failingResults = result.filter { it.matches(searchCriteria.filter) }
+    assertEquals(emptySet(), failingResults.toSet())
+}
+```
+
+### What's the size of an example? Which one is _simpler_?
+
+The strategy mentioned above opens another question: Which of the failing examples found so far is simpler? We are assuming example `C` above is simpler than `A` because, from the initial failing value, `C` was obtained applying 2 shrinks while `A` required just one. Although there may be other responses to this question, we have found that one to work quite well in real-world application.
+
+## 
+
 ## Shrinking in PBT libraries
 
 The intuitive idea of shrinking consists of reducing the _size_ of a value. Let's take the set of tags we want to use to filter items: `Set(Tag.clothes, Tag.exclusive)`. We could shrink it by removing elements from the set. Acording to this idea, `setOf(Tag.clothes)` would be intuitively one step smaller than the original value, as it would be `setOf(Tag.exclusive)`. If any of those simpler values still failed the test, we could shrink further by taking `emptySet()`, which would be 2 _steps_ smaller than the original value.

@@ -10,6 +10,8 @@ categories: kotlin
   - As a boolean condition
   - As an assertion (or collection of thereof)
 - Shrinking
+  - until number of iteratoins / duration / exhaustive
 - Example
 - seeds
 - finish condition
+- coverage
