@@ -5,7 +5,7 @@ title:  "Property based testing: Shrinking (part 2)"
 categories: [kotlin, testing, pbt, shrinking]
 author: Jordi Pradel
 description: >-
-  We can model property based testing shrinking as a shrink function that takes a value and produces a list of one step simpler values. Our testing libraries can provide those for simple, commonly used types, like `Int`, but we would need to provide user defined functions for our data types. But there are some difficulties in doing so.
+  We can model property based testing shrinking as a shrink function that takes a value and produces a list of one step simpler values. Our testing libraries can provide those for simple, commonly used types, like Int, but we would need to provide user defined functions for our data types. But there are some difficulties in doing so.
 ---
 
 In our [previous blog post on shrinking](2022-08-26-pbt-shrinking-part1.html) we saw that we want to find  the simplest failing example we can in a shrinking tree. We had an initial example that failed our tests:

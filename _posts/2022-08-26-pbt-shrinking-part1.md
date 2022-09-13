@@ -3,7 +3,7 @@ layout: post
 mermaid: true
 title:  "Property based testing: Shrinking (part 1)"
 author: Jordi Pradel
-categories: [kotlin,testing, pbt]
+categories: [kotlin,testing, pbt, shrinking]
 description: >-
   When a property test fails it provides an example for which our program doesn't behave. That randomly generated example may be too complex to diagnose the problem. Shrinking allows us to build simpler examples that still fail our tests, allowing for simpler reaasoning and debugging.
 ---
