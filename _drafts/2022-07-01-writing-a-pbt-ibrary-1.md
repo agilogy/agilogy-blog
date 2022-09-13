@@ -10,13 +10,13 @@ description: >-
 
 I feel like doing that: writing a property based testing library. There are many reasons, but I'd like to avoid unnecessary spoilers. I've used Scalatest (in Scala) and Kotest (in Kotlin) and I've learned a lot of those fine libraries. At the same time, I've seen things I'd like to improve and I feel like it will be fun to try to write one such library from scracth and tell the world about what I learn in the way...
 
-You may already know about property based testing and maybe even used it. Or this may be a new concept to you. I hope whatever your situation is, this will be an interesting lecture, as we dive into such an interesting problem.
+You may already know about property based testing and maybe even used it. Or this may be a new concept to you. I hope whatever your situation is, this will be an interesting read, as we dive into such an interesting problem.
 
 ## Property based testing: an introduction
 
 Our statement will be: We want to generate hundreds or thousands of random tests cases automatically with which to test our software instead of testing using hardcoded examples. Whenever our library finds a test case that fails, we want it to search for the simplest test case that still fails, and provide a clear, concise error message about what failed.
 
-When you use random data for test inputs and initial states, you get results that you can predict. Therefore, you can't write a test that expects a particular result or end state. The assertions you need to do depend on the test data randomly generated. We say you are checking properties.
+When you use random data for test inputs and initial states, you get results that you can't foresee. Therefore, you can't write a test that expects a particular result or end state. The assertions you need to do depend on the test data randomly generated. We say you are checking properties.
 
 Here you have an example of one such property:
 
@@ -42,7 +42,7 @@ I don't know about you, but this is asking me to generalize to other types:
 fun <A> forAny(r: Random<A>, property: (A) -> Boolean): Unit
 ```
 
-Unfortunately, `Random` is the name of a class in ` kotlin.random` that is used to... generate random numbers. I'd prefer to use a different name. The usual name for such a thing in property based testing is `Arbitrary` or `Arb`, for short. So, let's do some renaming:
+Unfortunately, `Random` is the name of a class in `kotlin.random` that is used to... generate random numbers. I'd prefer to use a different name. The usual name for such a thing in property based testing is `Arbitrary` or `Arb`, for short. So, let's do some renaming:
 
 ```kotlin
 fun <A> forAny(r: Arb<A>, property: (A) -> Boolean): Unit
@@ -73,7 +73,7 @@ There are, of course, several important _limitations_{:.sidenote-number}_Some ex
 
 ## Generating arbitrary integers
 
-So, to check our initial property, `forAny(arbInt){ i -> i + 0 == i }`, we need an `Arb<Int>`, a generator of arbitrary `Int` values. If you know a bit about Kotlin (or Java) way of generating random values it is not complicated. To make it easier to find using our IDE/editor auto-complete, we will add this `Arb` value as an extension to `Arb` companion object:
+So, to check our initial property, `forAny(arbInt){ i -> i + 0 == i }`, we need an `Arb<Int>`, a generator of arbitrary `Int` values. If you know a bit about the Kotlin (or Java) way of generating random values it is not complicated. To make it easier to find using our IDE/editor auto-complete, we will add this `Arb` value as an extension to `Arb` companion object:
 
 ```kotlin
 val Arb.Companion.int get() = object: Arb<Int>{

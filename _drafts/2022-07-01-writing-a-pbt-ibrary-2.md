@@ -19,15 +19,15 @@ val Arb.Companion.long: Arb<Long> get() = object : Arb<Long> {
     override fun generate(): Long = kotlin.random.Random.nextLong()
 }
 
-val Arb.Companion.float: Arb<Float> get() = object: Arb<Float>{
+val Arb.Companion.float: Arb<Float> get() = object : Arb<Float>{
     override fun generate(): Float = kotlin.random.Random.nextFloat()
 }
 
-val Arb.Companion.double: Arb<Double> get() = object: Arb<Double>{
+val Arb.Companion.double: Arb<Double> get() = object : Arb<Double>{
     override fun generate(): Double = kotlin.random.Random.nextDouble()
 }
 
-val Arb.Companion.boolean: Arb<Boolean> get() = object: Arb<Boolean>{
+val Arb.Companion.boolean: Arb<Boolean> get() = object : Arb<Boolean>{
     override fun generate(): Boolean = kotlin.random.Random.nextBoolean()
 }
 ```
