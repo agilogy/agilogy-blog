@@ -51,14 +51,14 @@ On the other hand, it is important that the shrink function only returns differe
 
 ## Shrinking simple types
 
-Given such a definition, the PBT library can define shrink functions for some ubiquitous simple types like `Int` or  `Instant`{:.sidenote-number} _Unrelated: Because you know and use `Instant`, right? You know `DateTime` does not correctly represent when something happened but else what did the clocks somewhere in the world displayed when that happened, right?_{:.sidenote}.
+Given such a definition, the PBT library can define shrink functions for some ubiquitous simple types like `Int` or  `Instant`{:.sidenote-number} _Unrelated: Because you know and use `Instant`, right? You know `DateTime` does not correctly represent when something happened but else what did the clocks somewhere in the world display when that happened, right?_{:.sidenote}.
 
 An example naive implementation of `Int` shrinking may be:
 
 ```kotlin
 fun intShrinks(value: Int): List<Int> =
     if (value == 0) emptyList()
-    else if (value < 0) intShrink(-value).map { -it }
+    else if (value < 0) intShrinks(-value).map { -it }
     else listOfNotNull(
         if (value >= 20) sqrt(value.toDouble()).toInt() else null,
         if (value >= 10) value / 2 else null,
@@ -87,7 +87,7 @@ Trying to generalize generic shrinks seems also easy for nullable types:
 fun <A> shrinks(value: A?): List<A?> = listOf(null)
 ```
 
-But, "Wait a minute!" - you say. Then, the shrinks for `55` of type `Int` are `listOf(7,27)` but the shrinks for 55 of type `Int?` are just `listOf(null)`? And you are right, we are loosing the nice shrink function we already have for a type and not applying it to the nullable version of it. So let's try to generalize that to a type that already has a shrinking function:
+But, "Wait a minute!" - you say. - "Then, the shrinks for `55` of type `Int` are `listOf(7,27)` but the shrinks for 55 of type `Int?` are just `listOf(null)`?". And you are right, we are loosing the nice shrink function we already have for a type and not applying it to the nullable version of it. So let's try to generalize that to a type that already has a shrinking function:
 
 ```kotlin
 fun <A> nullableShrinks(value: A?, notNullShrinks: (A) -> List<A>): List<A?> = 
@@ -235,7 +235,7 @@ What a repetition, huh? If only we could generalize that and automate it...
 
 ### Automatic shrinking function derivation
 
-Our shrinking functions heaven would be to automatically derive the shrinking functions our types need. For that we need a generic algorithm that is capable of returning a shrinking function for a given type (spoiler, it will take other shrinking functions as inputs). On top of that, some black magic may prove useful; something that, given the type we want to shrink (e.g. `ItemSearchCriteria`) automatically invokes such function and returns the shrink function. That could be based on introspection, macros... or some monads, as we will see in the (hopefully near) future.
+Our shrinking functions heaven would be to automatically derive the shrinking functions our types need. For that we need a generic algorithm that is capable of returning a shrinking function for a given type (spoiler, it will take other shrinking functions as inputs). On top of that, some black magic may prove useful; something that, given the type we want to shrink (e.g. `ItemSearchCriteria`) automatically invokes such function and returns the shrink function. That could be based on introspection, macros... But my doctor says I'm not allowed to use black magic while programming; I seem to be allergic. So I prefer to compose generators using monads and have the shrinking function derived for me, as I'll show in the (hopefully near) future.
 
 ## Conclusions
 
