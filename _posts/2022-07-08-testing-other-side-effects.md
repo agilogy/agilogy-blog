@@ -167,7 +167,8 @@ The Oracle, not the Oracle DB
 
 So we have built a simpler, better `age` function. But, paraphrasing the Oracle, what's really going to bake your noodle later on is, [would we still have reached such simple, elegant solution if I hadn't said anything about testing?](https://youtu.be/eVF4kebiks4?t=31)
 
-## Other articles in the series
+## All the articles in the series
 
 1. [What is an automated test, again?](./2022-05-27-what-is-an-automated-test-again.html)
 2. [Testing and persistent state](./2022-06-17-testing-and-persistent-state.html)
+3. [Testing other side effects](./2022-07-08-testing-other-side-effects.html)

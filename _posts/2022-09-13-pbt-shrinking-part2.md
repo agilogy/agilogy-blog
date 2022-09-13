@@ -1,7 +1,7 @@
 ---
 layout: post
 mermaid: true
-title:  "Property based testing: Shrinking (part 2)"
+title:  "Property based testing: Shrinking (part 2) - Shrinking functions"
 categories: [kotlin, testing, pbt, shrinking]
 author: Jordi Pradel
 description: >-
@@ -243,3 +243,7 @@ Our shrinking functions heaven would be to automatically derive the shrinking fu
 2. Shrinking functions are promising... but this blog post leaves the reader with a sense of unsafety. Is all this effort worth it? Will we be able to use shrinking or even property based testing without spending lots of hours in doing so? Will the benefit overcome the costs? Many teams I worked with weren't sure it wouldn't pay off until they started using property based testing with a proper shrinking infrastructure... and they loved it. So, please, keep reading this series. I'll try my best to keep writing them. 
 3. If you were expecting some more seriousness in the conclusions I'm sorry to disapoint you. I was in the mood for some more jokes. But please, do complain via Twitter.  After all, you went far enough to be reading the last few words of the article, so you deserve my apologies.
 
+## All the articles in the series
+
+1. [Property based testing: Shrinking (part 1)](./2022-08-26-pbt-shrinking-part1.html)
+2. [Property based testing: Shrinking (part 2) - Shrinking functions](./2022-09-13-pbt-shrinking-part2.html)

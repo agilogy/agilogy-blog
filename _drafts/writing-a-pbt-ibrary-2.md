@@ -65,7 +65,7 @@ Let's say I want to check a typical property, like the commutativity of the sum 
 
 > For any pair of ints a, b: a + b = b + a
 
-In this example I need arbitrary values of type `Pair<Int, Int>`. Again, instead of thinking about concrete solutions every time we need one, let's generalize that to arbitrary values that are tuples of other types:
+In this example I need arbitrary values of type `Pair<Int, Int>`. Again, instead of thinking about a specific solution every time we need one, let's generalize that to arbitrary values that are tuples of other types:
 
 ```kotlin
 fun <A, B> Arb.Companion.pair(a: Arb<A>, b: Arb<B>): Arb<Pair<A, B>> =

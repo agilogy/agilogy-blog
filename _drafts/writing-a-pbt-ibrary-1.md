@@ -10,6 +10,9 @@ description: >-
 
 I feel like doing that: writing a property based testing library. There are many reasons, but I'd like to avoid unnecessary spoilers. I've used Scalatest (in Scala) and Kotest (in Kotlin) and I've learned a lot of those fine libraries. At the same time, I've seen things I'd like to improve and I feel like it will be fun to try to write one such library from scracth and tell the world about what I learn in the way...
 
+![Let's do this!](../assets/img/letsDoThis.gif){:.figcaption}
+
+
 You may already know about property based testing and maybe even used it. Or this may be a new concept to you. I hope whatever your situation is, this will be an interesting read, as we dive into such an interesting problem.
 
 ## Property based testing: an introduction
@@ -60,7 +63,7 @@ fun <A> forAny(r: Arb<A>, property: (A) -> Boolean) {
 }
 ```
 
-So, we found out we need `Arb<A>` to implement  `generate()`{:.sidenote-number} _I add a companion object so that we can later add extension functions and avlues to it, see below._{:.sidenote}:
+So, we found out we need `Arb<A>` to implement  `generate()`{:.sidenote-number} _I add a companion object so that we can later add extension functions and values to it, see below._{:.sidenote}:
 
 ```kotlin
 interface Arb<A> {
@@ -69,7 +72,7 @@ interface Arb<A> {
 }
 ```
 
-There are, of course, several important _limitations_{:.sidenote-number}_Some examples of such limitations: We would like to be able to provide a seed that makes our random values reproducible, we'd like to have better error messages, we'd like to be able to configure how many iterations we want on each property we check, we will want the library to simplify test cases that fail to provide the simplest value that still fails, etc._{:.sidenote} in this implementation, but we want to start with something we can run as soon as possible and iterate from there.
+There are, of course, several important _limitations_{:.sidenote-number}_Some examples of such limitations: We would like to be able to provide a seed that makes our random values reproducible, we'd like to have better error messages, we'd like to be able to configure how many iterations we want on each property we check, we will want the library to [simplify test cases that fail to provide the simplest value that still fails](https://blog.agilogy.com/2022-08-26-pbt-shrinking-part1.html), etc._{:.sidenote} in this implementation, but we want to start with something we can run as soon as possible and iterate from there.
 
 ## Generating arbitrary integers
 

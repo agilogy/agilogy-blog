@@ -134,3 +134,9 @@ What if your function is not deterministic because... it generates random values
 Let's talk about these dreaded scenarios in our next post about software testing!
 
 I hope you enjoyed this one. See you soon!
+
+## All the articles in the series
+
+1. [What is an automated test, again?](./2022-05-27-what-is-an-automated-test-again.html)
+2. [Testing and persistent state](./2022-06-17-testing-and-persistent-state.html)
+3. [Testing other side effects](./2022-07-08-testing-other-side-effects.html)

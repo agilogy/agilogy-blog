@@ -167,3 +167,8 @@ We have seen how property based testing gives us complex examples of inputs for 
 
 In the next post in the series we'll discuss how a property based testing library can automate this shrinking and what are the difficulties of doing so.
 
+## All the articles in the series
+
+1. [Property based testing: Shrinking (part 1)](./2022-08-26-pbt-shrinking-part1.html)
+2. [Property based testing: Shrinking (part 2) - Shrinking functions](./2022-09-13-pbt-shrinking-part2.html)
+

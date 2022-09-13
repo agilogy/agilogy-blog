@@ -189,6 +189,8 @@ But many open questions from the first article remain unanswered. What about tes
 
 More on all of that to come. See you soon!
 
-## Other articles in the series
+## All the articles in the series
 
 1. [What is an automated test, again?](./2022-05-27-what-is-an-automated-test-again.html)
+2. [Testing and persistent state](./2022-06-17-testing-and-persistent-state.html)
+3. [Testing other side effects](./2022-07-08-testing-other-side-effects.html)
