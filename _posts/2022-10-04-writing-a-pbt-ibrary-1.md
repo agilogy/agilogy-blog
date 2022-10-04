@@ -8,29 +8,59 @@ description: >-
   Let's write a Property Based Testing library in Koglin and see what happens!
 ---
 
-I feel like doing that: writing a property based testing library. There are many reasons, but I'd like to avoid unnecessary spoilers. I've used Scalatest (in Scala) and Kotest (in Kotlin) and I've learned a lot of those fine libraries. At the same time, I've seen things I'd like to improve and I feel like it will be fun to try to write one such library from scracth and tell the world about what I learn in the way...
+I feel like doing that: writing a property based testing library. I've been blogging about property based testing in the past few weeks. In particular, about value shrinking. You can find the articles [here](./2022-08-26-pbt-shrinking-part1.html) and [here](./2022-09-13-pbt-shrinking-part2.html). The idea was to talk about the general concept but still show it in real(ish) code. At the same time, I wanted to avoid talking specifically about [Kotest](https://kotest.io/), [Scalatest](https://www.scalatest.org/) or any other library. Not because they are'nt amazing (they indeed are) but because they may be daunting and full-featured, which could be distracting to the purposes of my intent.
+
+But now I'm in the mood for writing an actual property based testing library. Not one you will use in real projects, but one I can use to learn (and hopefully show, explain or teach) something about property based testing. Furthermore through my experience with those libraries, I've seen things I'd like to improve. Why not try my best at it?
 
 ![Let's do this!](../assets/img/letsDoThis.gif){:.figcaption}
 
+So... let's do this! Let's write a property based testing library from scracth, in Kotlin, and tell the world about what I learn in the way...
 
-You may already know about property based testing and maybe even used it. Or this may be a new concept to you. I hope whatever your situation is, this will be an interesting read, as we dive into such an interesting problem.
+You may already know about property based testing and maybe even used it. You may as well have read my previous blog posts about shrinking. Or property based testing may be a new concept to you. I hope whatever your situation is, this will be an interesting read, as we dive into such an amazing exercise.
 
 ## Property based testing: an introduction
 
+I'm not goint to lie here. There are plenty of good introductory articles to property based testing, I'm in a hurry, I'm lazy and I don't want to write a lengthy explanation. So let's go direct to the point.
+
 Our statement will be: We want to generate hundreds or thousands of random tests cases automatically with which to test our software instead of testing using hardcoded examples. Whenever our library finds a test case that fails, we want it to search for the simplest test case that still fails, and provide a clear, concise error message about what failed.
 
-When you use random data for test inputs and initial states, you get results that you can't foresee. Therefore, you can't write a test that expects a particular result or end state. The assertions you need to do depend on the test data randomly generated. We say you are checking properties.
+Easy peasy. So, if you are testing a nice `sum(a:Int, b:Int): Int` function,  instead of writing a test like...
+
+```kotlin
+val a = 5
+val b = 9
+assertEquals(14, sum(a, b))
+```
+
+You'd write something _like_{:.sidenote-number} _I know, I know... Bear with me and this ugly design. I just try to avoid spoiling the nice design we'll use just a couple of paragraphs below..._{:.sidenote}:
+
+```kotlin
+testManyTimes {
+  val a = someRandomInt()
+  val b = someRandomInt()
+  assertEquals(`???`, sum(a, b))
+}
+```
+
+But what value do we use for `???`{:.sidenote-number} _Why not `assertEquals(a + b, sum(a, b)`? -  you may say... Well, because that would mean, basically duplicating the implementation of the function under test in your test code. Which would have the classical DRY violations flaws and, worst of all, it would only test that 2 probably buggy implementations behave the same way._{:.sidenote}? 
+
+When you use random data for test inputs and initial states, you get results that you can't foresee. Therefore, you can't write a test that expects a particular result ([or end state](./2022-06-17-testing-and-persistent-state.html)). The assertions you need to do depend on the test data randomly generated. We say you are checking properties.
 
 Here you have an example of one such property:
 
-> For any integer number i, i + 0 = i
+> For any integer number i, sum(i, 0) = i
 
 ## Let's code!
 
-How would we code a simple property like the one above? We need some value that represents "any integer number". Let's go with this naming:
+How would we code a simple property like the one above? Clearly not with the `testManyTimes` and `someRandomInt` names I used above. We need:
+
+- A value that represents "any integer number". We'll call it `randomInt`.
+- A function that given such value returns wether it satisfies the desired property or not
+
+So let's go with this naming:
 
 ```kotlin
-forAny(randomInt){ i -> i + 0 == i }
+forAny(randomInt){ i -> sum(i, 0) == i }
 ```
 
 We could define one such function like _this_{:.sidenote-number} _I'm assuming a certain degree of imperative programming here: The function forAny will throw if there is a test failure. We could of course have it return a result functionally, but I prefer to keep things more familiar to more people._{:.sidenote}:
@@ -39,7 +69,7 @@ We could define one such function like _this_{:.sidenote-number} _I'm assuming a
 fun forAny(r: RandomInt, property: (Int) -> Boolean): Unit
 ```
 
-I don't know about you, but this is asking me to generalize to other types:
+I don't know about you, but this is asking me to generalize to other types than `Int`:
 
 ```kotlin
 fun <A> forAny(r: Random<A>, property: (A) -> Boolean): Unit
@@ -48,22 +78,22 @@ fun <A> forAny(r: Random<A>, property: (A) -> Boolean): Unit
 Unfortunately, `Random` is the name of a class in `kotlin.random` that is used to... generate random numbers. I'd prefer to use a different name. The usual name for such a thing in property based testing is `Arbitrary` or `Arb`, for short. So, let's do some renaming:
 
 ```kotlin
-fun <A> forAny(r: Arb<A>, property: (A) -> Boolean): Unit
+fun <A> forAny(a: Arb<A>, property: (A) -> Boolean): Unit
 ```
 
-Let's try to implement this `forAny` function. We want to test, let's say, 100 test cases generated by `Random`:
+Let's try to implement this `forAny` function. We want to test, let's say, 100 test cases generated by `Arb`:
 
 ```kotlin
-fun <A> forAny(r: Arb<A>, property: (A) -> Boolean) {
+fun <A> forAny(a: Arb<A>, property: (A) -> Boolean) {
     (1..100).forEach { attemptNumber ->
-        val sample = r.generate()
+        val sample = a.generate()
         if (!property(sample)) 
           throw PropertyFailedException(attemptNumber,sample)
     }
 }
 ```
 
-So, we found out we need `Arb<A>` to implement  `generate()`{:.sidenote-number} _I add a companion object so that we can later add extension functions and values to it, see below._{:.sidenote}:
+So, we found out we need `Arb<A>` to implement  `generate()`{:.sidenote-number} _I added a companion object so that we can later add extension functions and values to it, see below._{:.sidenote}:
 
 ```kotlin
 interface Arb<A> {
@@ -72,11 +102,11 @@ interface Arb<A> {
 }
 ```
 
-There are, of course, several important _limitations_{:.sidenote-number}_Some examples of such limitations: We would like to be able to provide a seed that makes our random values reproducible, we'd like to have better error messages, we'd like to be able to configure how many iterations we want on each property we check, we will want the library to [simplify test cases that fail to provide the simplest value that still fails](https://blog.agilogy.com/2022-08-26-pbt-shrinking-part1.html), etc._{:.sidenote} in this implementation, but we want to start with something we can run as soon as possible and iterate from there.
+There are, of course, several important _limitations_{:.sidenote-number}_Some examples of such limitations: We would like to be able to provide a seed that makes our random values reproducible, we'd like to have better error messages, we'd like to be able to configure how many iterations we want on each property we check, we will want the library to [simplify test cases that fail to provide the simplest value that still fails](./2022-08-26-pbt-shrinking-part1.html), etc._{:.sidenote} in this implementation, but we want to start with something we can run as soon as possible and iterate from there.
 
 ## Generating arbitrary integers
 
-So, to check our initial property, `forAny(arbInt){ i -> i + 0 == i }`, we need an `Arb<Int>`, a generator of arbitrary `Int` values. If you know a bit about the Kotlin (or Java) way of generating random values it is not complicated. To make it easier to find using our IDE/editor auto-complete, we will add this `Arb` value as an extension to `Arb` companion object:
+So, to check our initial property, `forAny(arbInt){ i -> sum(i, 0) == i }`, we need an `Arb<Int>`, a generator of arbitrary `Int` values. If you know a bit about the Kotlin (or Java) way of generating random values it is not complicated. To make it easier to find using our IDE/editor auto-complete, we will add this `Arb` value as an extension to `Arb` companion object:
 
 ```kotlin
 val Arb.Companion.int get() = object: Arb<Int>{
@@ -90,7 +120,7 @@ Now, everything is in place to actually _test_{:.sidenote-number}_We are using `
 
 ```kotlin
 @Test
-fun testSum0() = forAny(Arb.int) { i -> i + 0 == i }
+fun testSum0() = forAny(Arb.int) { i -> sum(i, 0) == i }
 ```
 
 ✅ Green!
@@ -99,7 +129,7 @@ What about finding a test case that fails? We'll use a property that is not true
 
 ```kotlin
 @Test
-fun testDoubleIsGreater() = forAny(Arb.int) { i -> i + i >= i }
+fun testDoubleIsGreater() = forAny(Arb.int) { i -> sum(i, i) >= i }
 ```
 
 🔴 Property failed at attempt 3 with sample 2018188761
@@ -119,7 +149,7 @@ So far so good... But, hey, I just realized I write automated tests for everythi
 @Test
 fun testDoubleIsGreater() =
   assertFailsWith<PropertyFailedException> {  
-    forAny(Arb.int) { i -> i + i >= i } 
+    forAny(Arb.int) { i -> sum(i, i) >= i } 
   }
 ```
 
@@ -128,7 +158,7 @@ But this seems not enough... Not any `PropertyFailedException` is ok. At least, 
 ```kotlin
 @Test
 fun testDoubleIsGreater() {
-    val property: (Int) -> Boolean =  { i -> i + i >= i }
+    val property: (Int) -> Boolean =  { i -> sum(i, i) >= i }
     val failure = assertFailsWith<PropertyFailedException> {
         forAny(Arb.int, property)
     }
