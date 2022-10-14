@@ -33,8 +33,6 @@ testAll(itemSearchCriteriaArb, shrinkUntil = StopCondition.after(3.minutes)) {
 
 The strategy mentioned above opens another question: Which of the failing examples found so far is simpler? We are assuming example `C` above is simpler than `A` because, from the initial failing value, `C` was obtained applying 2 shrinks while `A` required just one. Although there may be other responses to this question, we have found that one to work quite well in real-world application.
 
-## 
-
 ## Shrinking in PBT libraries
 
 The intuitive idea of shrinking consists of reducing the _size_ of a value. Let's take the set of tags we want to use to filter items: `Set(Tag.clothes, Tag.exclusive)`. We could shrink it by removing elements from the set. Acording to this idea, `setOf(Tag.clothes)` would be intuitively one step smaller than the original value, as it would be `setOf(Tag.exclusive)`. If any of those simpler values still failed the test, we could shrink further by taking `emptySet()`, which would be 2 _steps_ smaller than the original value.

@@ -685,3 +685,30 @@ hr.slender {
   content: "\eae4";
 }
 /*-- End of Icomoon icon font section --*/
+
+del {
+  text-decoration: none;
+  display: inline-block;
+  position: relative;
+}
+del::after {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 50%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-bottom: red 3px solid;
+}
+
+ins {
+  text-decoration: none;
+  font-family: 'Caveat', cursive;
+  font-size: 1.2em;
+  color: red;
+  position: absolute;
+  transform: rotate(-10deg);
+  margin-left: -1rem;
+  margin-top: -2rem;
+}
