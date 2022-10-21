@@ -5,7 +5,7 @@ title: Writing a Property Based Testing library in Kotlin, a Journey (part 1)
 author: Jordi Pradel
 categories: [kotlin,propertybasedtesting,pbt,testing,design]
 description: >-
-  Let's write a Property Based Testing library in Koglin and see what happens!
+  Let's write a Property Based Testing library in Kotlin and see what happens!
 ---
 
 I feel like doing that: writing a property based testing library. I've been blogging about property based testing in the past few weeks. In particular, about value shrinking. You can find the articles [here](./2022-08-26-pbt-shrinking-part1.html) and [here](./2022-09-13-pbt-shrinking-part2.html). The idea was to talk about the general concept but still show it in real(ish) code. At the same time, I wanted to avoid talking specifically about [Kotest](https://kotest.io/), [Scalatest](https://www.scalatest.org/) or any other library. Not because they are'nt amazing (they indeed are) but because they may be daunting and full-featured, which could be distracting to the purposes of my intent.

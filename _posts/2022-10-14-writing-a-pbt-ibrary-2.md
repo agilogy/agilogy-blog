@@ -12,7 +12,7 @@ In our [previous post](/2022-07-01-writing-a-pbt-ibrary-1.html) we developed a m
 
 ## Simple types
 
-We could start by adding `Arb` instances for some types for which `kotlin.random.Random` already knows how to generate random _values_{:.sidenote-number}_What about `Char` and `String`, aren't they simple? They aren't. Not if you work outside the ASCII limits. Which I do. Because I speak catalan, and we have things like `è` or `ç` or even `l·l`... and I work in projects that use asiatic languages which for us, poor lating alphabet users, are a complex fantasy._{:.sidenote}:
+We could start by adding `Arb` instances for some types for which `kotlin.random.Random` already knows how to generate random _values_{:.sidenote-number}_What about `Char` and `String`, aren't they simple? They aren't. Not if you work outside the ASCII limits. Which I do. Because I speak catalan, and we have things like `è` or `ç` or even `l·l`... and I work in projects that use asiatic languages which for us, poor latin alphabet users, are a complex fantasy._{:.sidenote}:
 
 ```kotlin
 val Arb.Companion.long: Arb<Long> get() = object : Arb<Long> {
@@ -46,7 +46,7 @@ And so on...
 
 What about nullable types like `Int?` or `Float?`. We could build a nullable version of each `Arb` we have, but that would be tedious and repetitive. What we would like is to be able to convert an `Arb<A>` to an `Arb<A?>` for any given `A` .
 
-Let's try it! We can even adjust the probability we want to get a null value: _We parameterize the type as <A: Any> so that you can't use `orNull` on already nullable types. That will avoid confusion, as applying multilpe times `orNull` would exagerate the probability fo null values being generated._{:.marginnote} 
+Let's try it! We can even adjust the probability we want to get a null value: _We parameterize the type as <A: Any> so that you can't use `orNull` on already nullable types. That will avoid confusion, as applying multiple times `orNull` would exagerate the probability of null values being generated._{:.marginnote} 
 
 ```kotlin
 fun <A : Any> Arb<A>.orNull(nullProbability: Double = 0.5): Arb<A?> =
@@ -147,7 +147,7 @@ fun <A, B, C> forAny(a: Arb<A>, b: Arb<B>, c: Arb<C>, property: (A, B, C) -> Boo
     forAny(Arb.product3(a, b, c, property)){ it }
 ```
 
-Wait! What did I just do _here?_{:.sidenote-number} _I must admit it. I actually wrote this articles some weeks ago and now, while proofreading it before publishing, I couldn't initially remember how this works. So let's try to explain it a bit._{:.sidenote}
+Wait! What did I just do _here?_{:.sidenote-number} _I must admit it. I actually wrote these articles some weeks ago and now, while proofreading it before publishing, I couldn't initially remember how this works. So let's try to explain it a bit._{:.sidenote}
 
 The trick is using `property` as the function argument of `productN`. That way, the `productN` function directly builds the result of evaluating the property. Hence, we expect, `forAny` such evaluated property, to simply be true. It's like:
 
@@ -229,7 +229,7 @@ Did you see what I did? We are now equipped with:
 - A combinator `map` to go from `Arbitrary<A>` to `Arbitrary<B>` given a function `(A) -> B`
 - A family of combinators `product2`, `product3`, `product4`, etc. to build an instance of `Arbitrary` from several instances of (possibly) different types.
 
-Armed with all this tools, we can now generate **many** of the instances we need. In particular, we can now generate an `Arbitrary` for any data class as long as we have the needed primitive _instances_{:.sidenote-number} _I'm aware we have unsigned integers in Kotlin, but I wanted an example of `map` being used and that was what I got._{:.sidenote}:
+Armed with all these tools, we can now generate **many** of the instances we need. In particular, we can now generate an `Arbitrary` for any data class as long as we have the needed primitive _instances_{:.sidenote-number} _I'm aware we have unsigned integers in Kotlin, but I wanted an example of `map` being used and that was what I got._{:.sidenote}:
 
 ```kotlin
 data class Natural(val value: Int)
