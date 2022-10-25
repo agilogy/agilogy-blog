@@ -249,7 +249,7 @@ So, that's it! Now, whenever you get a test failure, if you want to run it again
 forAny(arb, 123456L, property)
 ```
 
-You can see the current version of our library at [https://github.com/agile-jordi/wapbtl/tree/part2](https://github.com/agile-jordi/wapbtl/tree/part3).
+You can see the current version of our library at [https://github.com/agile-jordi/wapbtl/tree/part3](https://github.com/agile-jordi/wapbtl/tree/part3).
 
 
 ## All articles in the series
