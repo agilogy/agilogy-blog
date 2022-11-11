@@ -491,6 +491,8 @@ val array: Parser[JsonArray] =
 
 We applied TDD to implement a parser capable of parsing... just empty Json arrays with or without whitespace in between. Even though their capability is very limited, this exercise served the purpose of defining our design for a parser  `type Parser[A] = (String, Int) => Either[ParseError, A]`. Then we discovered that instead of having functions that happen to parse what we want, we can haver functions that return parsers and values of type parser. Finally we found a way of combining 2 or more of these parsers to build a new parser without actually programming what the parser does when it receives the `String` and `Int` arguments, but designing how it is a sequence of 2 other parsers.
 
+You can see the companion repository to this series at [https://github.com/agile-jordi/writingAParserLibrary/tree/part1](https://github.com/agile-jordi/writingAParserLibrary/tree/part1).
+
 
 
 
