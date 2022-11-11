@@ -8,7 +8,7 @@ description: >-
   Our small property based testing library is working now. But whenever something goes wrong, we want the maximum usability, so that diagnosing (and therefore fixing) bugs is as easy as possible. One way we can make our lives easier is by providing a mechanism to re-run the test directly using the exact same example that was used in a previously failed test.
 ---
 
-In our [previous](https://blog.agilogy.com/2022-10-04-writing-a-pbt-ibrary-1.html) [posts](TODO) we developed a minimal property based testing (PBT) library capable of checking properties on primitive types, nullable types, tuples and types mapped from other types, giving us the possibility of testing properties of our programs and functions for many kinds of input values.
+In our [previous](/2022-10-04-writing-a-pbt-ibrary-1.html) [posts](/2022-10-14-writing-a-pbt-ibrary-2.html) we developed a minimal property based testing (PBT) library capable of checking properties on primitive types, nullable types, tuples and types mapped from other types, giving us the possibility of testing properties of our programs and functions for many kinds of input values.
 
 One of the (many) shortcoming of this small thing we created is in the reproducibility of failed tests. If you are checking a property for simple values like `forAny(Arb.int) { i -> i + i >= i }`  the outcome is quite informative:
 

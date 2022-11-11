@@ -8,7 +8,7 @@ description: >-
   We continue our journey into writing a property based testing library from scratch. This time we focus on generating combinators for arbitrary generators, so that our user can build new arbitrary generators from the ones provided by the library. We implement orNull, map and product2, product3, etc.
 ---
 
-In our [previous post](/2022-07-01-writing-a-pbt-ibrary-1.html) we developed a minimal Property Based Testing library in Kotlin that was capable of testing properties of `Int` values. Amongst its limitations, I find its inhability to test properties on other types disturbing. So let's add some more `Arb` values to our beloved library.
+In our [previous post](/2022-10-04-writing-a-pbt-ibrary-1.html) we developed a minimal Property Based Testing library in Kotlin that was capable of testing properties of `Int` values. Amongst its limitations, I find its inhability to test properties on other types disturbing. So let's add some more `Arb` values to our beloved library.
 
 ## Simple types
 
