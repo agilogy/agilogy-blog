@@ -1,6 +1,8 @@
 ---
 layout: post
-title: "Writing a parser library in Scala. Part 2: Repetition..."
+title: >- 
+  Writing a Parser Combinator Library in Scala 3.<br>
+  Part 2: Choices and repetitions
 author: Jordi Pradel
 categories: [scala,parsers,design,fp]
 description: >-
@@ -676,3 +678,9 @@ We have now a quite capable Json parser. Some known limitations we may want to o
 After the very limited but promising features developed in the first part of the series, we developed an almost complete Json parser using a TDD aproach. At the same time, at each "refactor" phase, we abstracted a bunch of useful parser combinator functions, therefore developing a parser combinator library, as we intended.
 
 Beyond the (known) limitations of our Json parser, we now have a quite capable parser combinator library... although we only tested one example grammar we developed with it. And this is one of the drawbacks of this approach compared to the approach in the [Red book](https://www.manning.com/books/functional-programming-in-scala). We now have a parser combinator library but we don't have any tests of the library itself, but just tests of one example parser we implemented with it.
+
+## All articles in the series
+
+1. [Writing a Parser Combinator Library in Scala 3. Part 1: Introduction to Parsing](./2022-11-11-writing-a-parser-combinator-library-1.html)
+2. [Writing a parser library in Scala. Part 2: Choices and repetitions](./2022-12-16-writing-a-parser-combinator-library-2.html)
+

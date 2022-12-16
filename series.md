@@ -30,4 +30,5 @@ In which we write a Property Based Testing library from scratch in Kotlin using 
 
 This time we aim to write a combinator parser library from scratch in Scala 3, like the famous [Red book](https://www.manning.com/books/functional-programming-in-scala) does. But instead of applying algebraic design, we'll use a traditional TDD while developing a Json parser and will be creating abstractions, the Parser Combinator Library, during the refactor phases.
 
-- [Part 1: Introduction to Parsing](/2022-11-11-writing-a-parser-combinator-library-1.html)
+1. [Part 1: Introduction to Parsing](./2022-11-11-writing-a-parser-combinator-library-1.html)
+2. [Part 2: Choices and repetitions](./2022-12-16-writing-a-parser-combinator-library-2.html)
