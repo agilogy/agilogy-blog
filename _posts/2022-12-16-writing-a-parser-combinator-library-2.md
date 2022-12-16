@@ -329,7 +329,7 @@ val booleanArray: Parser[Json] =
 ```
 
 ![repetition](../assets/recursiveRepetition.gif)
-{:.sidenote}
+{:.figcaption}
 _Repetition... by self-recursion! How cool is that?_{:.figcaption}
 
 Now we need to implement `repeated`. Here is one fancy way with just the combinators we already have and a recursive definition:
