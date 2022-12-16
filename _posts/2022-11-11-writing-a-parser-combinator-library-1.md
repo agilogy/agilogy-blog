@@ -319,8 +319,8 @@ Let's try now to rewrite our array parser:
 val array: Parser[JsonArray] = (s, position) =>
   for
     _ <- string("[")(s, position)
-    _ <- whitespace(s, position)
-    _ <- string("]")(s, position + ???)
+    _ <- whitespace(s, position + 1)
+    _ <- string("]")(s, ???)
   yield JsonArray(List.empty)
 ```
 

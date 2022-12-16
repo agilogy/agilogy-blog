@@ -155,6 +155,7 @@ For some reason, I've seen cases where the recipe is different. Instead of setti
 
 
 ![Compiling](../assets/img/compiling.png){: height="250px" width="250px"}
+{:.figcaption}
 [https://xkcd.com/303/]()
 {:.figcaption}
 
