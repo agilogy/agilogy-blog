@@ -679,6 +679,8 @@ After the very limited but promising features developed in the first part of the
 
 Beyond the (known) limitations of our Json parser, we now have a quite capable parser combinator library... although we only tested one example grammar we developed with it. And this is one of the drawbacks of this approach compared to the approach in the [Red book](https://www.manning.com/books/functional-programming-in-scala). We now have a parser combinator library but we don't have any tests of the library itself, but just tests of one example parser we implemented with it.
 
+You can see the complete source code of this post here: https://github.com/agile-jordi/writingAParserLibrary/tree/part2.
+
 ## All articles in the series
 
 1. [Writing a Parser Combinator Library in Scala 3. Part 1: Introduction to Parsing](./2022-11-11-writing-a-parser-combinator-library-1.html)
