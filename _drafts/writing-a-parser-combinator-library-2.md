@@ -1,14 +1,13 @@
 ---
-
 layout: post
 title: "Writing a parser library in Scala. Part 2: Repetition..."
 author: Jordi Pradel
 categories: [scala,parsers,design,fp]
 description: >-
-  TODO()
+  We continue to build a Scala 3 parser combinator library by developing a Json parser using TDD. After some initial steps in part 1, we now want to parse arrrays and objects. For that, we'll need to handle choices (when we want to parse either one thing or another one) and sequences (when we want to parse one thing and then another one).
 ---
 
-In our previous post we created a small Scala parser capable only of parsing empty Json arrays with possible whitespace. While doing so we designed a parser to be a function that takes an input and an index within that input and returns some result of a given type `A` or fails with a `ParseError`:
+In [our previous post](/2022-11-11-writing-a-parser-combinator-library-1.html) we created a small Scala parser capable only of parsing empty Json arrays with possible whitespace. While doing so we designed a parser to be a function that takes an input and an index within that input and returns some result of a given type `A` or fails with a `ParseError`:
 
 ```scala
 type Parser[A] = (String, Int) => Either[ParseError, A]
@@ -85,9 +84,7 @@ test("Parse boolean failure") {
 }
 ```
 
-🔴 Compilation error.
-
-Let's fix compilation issues (`ParseError` now takes a list of expected tokens) and we are still in red:
+🔴 Compilation error. Our current `ParseError` class can only hold one expected `String` and we now want a `List` of them. Let's change that class and fix all the compilation issues and we are still in red:
 
 ```bash
 Left(ParseError("notABoolean", 0, List("false"))) did not equal Left(ParseError("notABoolean", 0, List("true", "false")))
@@ -129,7 +126,7 @@ Let's implement `booleanArray` like we only cared about arrays of 2 booleans, fo
     string("[") ** jsonBoolean ** string(",") ** jsonBoolean ** string("]")
 ```
 
-The first issue is we don't have a sequencing combinator for parsers other than `Parser[Int]`.  Let's try to fix that. We want to generalize ` sequence` to any kind of parsers.
+The first issue is we don't have a sequencing combinator (`**`) for parsers other than `Parser[Int]`.  Let's try to fix that. We want to generalize ` sequence` (`**`) to any kind of parsers.
 
 ```scala
 extension [A](self: Parser[A])
@@ -190,7 +187,7 @@ test("Parse empty array") {
 }
 ```
 
-✅ ♻️ Those tests are starting to be unconvenient. All of our tests try to parse at position 0, like the end users of our parsers will do. And they tend to not care about what the final position of the parsing is. Let's add another `apply` for that:
+✅ Green! ♻️ But those tests are starting to be unconvenient. All of our tests try to parse at position 0, like the end users of our parsers will do. And they tend to not care about what the final position of the parsing is. Let's add another `apply` for that:
 
 ```scala
 extension[A](self: Parser[A])
@@ -250,7 +247,7 @@ val booleanArray: Parser[JsonArray] =
     .map { case ((((_, b1), _), b2), _) => JsonArray(List(b1, b2)) }
 ```
 
-✅! ♻️ But that destructured argument to `map` was ugly. Let's try to fix it with some more sugar. I'll create an extension for `Parser[Unit]` where `sequence` ignores the `Unit` and I'll add a `sequence` version taking a `Parser[Unit]` that ignores that other `Unit`. As I'll need the original `sequence` in multiple places, I define it at the root level:
+✅! ♻️ But that destructured argument to `map` was ugly. Let's try to fix it with some more sugar. My idea is that whenever we sequence a parser of `Unit` and any other parser of any type `A`, we don't care about the `Unit` value and we just want the `A`, not a `Pair<Unit,A>`. I'll create an extension for `Parser[Unit]` where `sequence` ignores the `Unit` and I'll add a `sequence` version taking a `Parser[Unit]` that ignores that other `Unit`. As I'll need the original `sequence` in multiple places, I define it at the root level:
 
 ```scala
 def _sequence[A, B](a: Parser[A], b: Parser[B]): Parser[(A, B)] = ... 
@@ -312,7 +309,7 @@ The idea is to have `[`, then the array contents and then `]`. The array content
 
 We already know that `(string(",") ** boolean)` is of type `JsonBoolean`
 
-`p.repeated` is intended to represent a parser that parses whatever `p` parses any number of times, including 0. If `p` is of type `A`, then it will parse any number of chunks as instances of type `A`, giving us a collection of values of type `A`:
+`p.repeated` is intended to represent a parser that parses whatever `p` parses any number of times, including 0. If `p` is of type `A`, then it will parse any number of chunks as instances of type `A`, giving us a list of values of type `A`:
 
 ```scala
 extension [A](self: Parser[A])
@@ -323,14 +320,21 @@ Therefore, `(string(",") ** boolean).repeated` gives us a `List[JsonBoolean]`. A
 
 ```scala
 val booleanArray: Parser[Json] =
-  string("[") **
-    ((boolean ** (string(",") ** boolean).repeated).map {
-      case (b, l) => JsonArray(b :: l)
-    } | empty(JsonArray(List.empty)))
-    ** string("]")
+  string("[") ** (
+      (boolean ** (string(",") ** boolean).repeated).map { case (b, l) => JsonArray(b :: l)} | 
+      empty(JsonArray(List.empty))
+    ) ** string("]")
 ```
 
+![repetition](../assets/recursiveRepetition.gif)
+{:.sidenote}
+_Repetition... by self-recursion! How cool is that?_{:.figcaption}
+
 Now we need to implement `repeated`. Here is one fancy way with just the combinators we already have and a recursive definition:
+
+We can define a parser `repeated` that, when needed, tries to parse some content with `repeated` itself. Like a function calling itself but with parsers. 
+
+Let's see how that turns out:
 
 ```scala
 def repeated: Parser[List[A]] = (self ** repeated).map(_ :: _) | empty(List.empty)
@@ -347,7 +351,7 @@ java.lang.StackOverflowError
 
 🔴 Ops! When defining `repeated` it calls `repeated`. `StackOverflowError`.
 
-But we may use some lazyness here. After all, `sequence` (or `**`) won't need the second parser unless the first one succeeds. It seems only natural for them to evaluate that second parser lazyly:
+But we may use some lazyness here. After all, `sequence` (or `**`) won't need the second parser unless the first one succeeds. It seems only natural for it (and its variants) to evaluate that second parser lazyly:
 
 ```scala
 def _sequence[A, B](a: Parser[A], b: => Parser[B]): Parser[(A, B)] = ...
@@ -394,7 +398,7 @@ def repeated: Parser[List[A]] = (s, position) =>
 
 ✅ ! 
 
-♻️ Let's refactor a bit... We now have 2 array parsers: an `array` parser that only accepts whitespace and a `booleanArray` parser that only accepts booleans. Let's remove the former and make the later accept whitespace by using `whitespace` instead of `empty`:
+♻️ Let's refactor a bit... We now have 2 array parsers: an `array` parser that only accepts whitespace and a `booleanArray` parser that only accepts booleans. Let's remove the former and make the later accept whitespace by using `whitespace`{:.sidenote-number}_I should, in fact, allow whitespace in many other places, like between the `","` and the next boolean. But let me add that to the backlog and keep going._{:.sidenote} instead of `empty`:
 
 ```scala
 val array: Parser[Json] =
@@ -409,7 +413,7 @@ val array: Parser[Json] =
 
 ## Other primitives
 
-Let me finish with the parsing of other primitive values. Let's start with Json numbers. The grammar for Json numbers occupies some space of your screen but it is not complex:
+Let me continue with the parsing of other primitive values. Let's start with Json numbers. The grammar for Json numbers occupies some space of your screen but it is not complex:
 
 <img src="../assets/json-number.png" alt="img" style="zoom:33%;" /> 
 
@@ -429,7 +433,7 @@ test("Parse json numbers") {
 
 🔴 because it doesn't compile and 🔴 once we write `number` to return `???`.
 
-We could parse numbers by hand with our current combinators, probably. But them being tokens it seems easier to just use a Regex:
+We could parse numbers by hand with our current combinators, probably. But them being tokens, it seems easier to just use a Regex:
 
 ```scala
 val number: Parser[JsonNumber] =
@@ -456,7 +460,7 @@ characters
     ""
     character characters
 character
-    '0020' . '10FFFF' - '"' - '\'
+    '0020' .. '10FFFF' - '"' - '\'
     '\' escape
 ```
 
@@ -501,10 +505,7 @@ Now I can close the circle and try to implement arrays of arbitrary Json values.
 🔴 This time it compiles, but the test fails with:
 
 ```bash
-Expected :Right(JsonArray(List(
-  JsonNumber("1"), JsonBoolean(false), JsonString("hello"), 
-  JsonArray(List(JsonBoolean(true), JsonNumber("3")))
-)))
+Expected :Right(...)
 Actual   :Left(ParseError("[1,false,"hello",[true,3]]", 1, List(""]"")))
 ```
 
@@ -518,11 +519,10 @@ And now `array` can contain `json` values instead of just `boolean` values:
 
 ```scala
 val array: Parser[Json] =
-  token("[") **
-    ((json ** (token(",") ** json).repeated).map {
-      case (b, l) => JsonArray(b :: l)
-    } | whitespace(JsonArray(List.empty)))
-    ** token("]")
+  token("[") ** (
+      (json ** (token(",") ** json).repeated).map { case (b, l) => JsonArray(b :: l) } | 
+      whitespace(JsonArray(List.empty))
+  ) ** token("]")
 ```
 
 My IntelliJ warns me that referring `json`, which I have defined after `array`, is a suspicious forward reference. Furthermore, the reference is circular, because `array` uses `json` and `json` uses `array`.  But let's just run the tests and see what happens...
@@ -541,7 +541,7 @@ My IntelliJ warns me that referring `json`, which I have defined after `array`, 
 
 ## Parsing objects
 
-Let's go directly to the TDD cycle:
+And now, objects! Let's go directly to the TDD cycle:
 
 ```scala
 test("Parse object") {
@@ -562,9 +562,10 @@ Let's just copy the `array` solution but parse object members (a key, `":"` and 
 val member: Parser[(String, Json)] = string.map(_.value) ** token(":") ** json
 
 val obj: Parser[Json] =
-  token("{") **
-    ((member ** (token(",") ** member).repeated).map { case (b, l) => JsonObject((b :: l).toMap) } | whitespace.as(JsonObject(Map.empty)))
-    ** token("}")
+  token("{") ** (
+    (member ** (token(",") ** member).repeated).map { case (b, l) => JsonObject((b :: l).toMap) } | 
+    whitespace.as(JsonObject(Map.empty))
+  ) ** token("}")
 
 val json: Parser[Json] = boolean | string | number | array | obj
 ```
