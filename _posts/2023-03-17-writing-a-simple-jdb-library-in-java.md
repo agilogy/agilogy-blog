@@ -29,7 +29,7 @@ Summarizing the idea:
 
 I've used this very same approach with Scala (I admit some implicits where used there) and Kotlin (look, ma! no implicits!). So let's try my hand at Java.
 
-Under the hood I'm using Jdbc. Yes, it blocks threads, but that may be solved sooner than anyone expected. And it throws ugly checked exceptions we will need to daeal with. In fact, it very poorly handles errors in a non standard way. But other than that, it is fine and very well known.
+Under the hood I'm using Jdbc. Yes, it blocks threads, but that may be solved sooner than anyone expected. And it throws ugly checked exceptions we will need to deal with. In fact, it very poorly handles errors in a non standard way. But other than that, it is fine and very well known.
 
 ## Connections and DataSources
 
@@ -49,7 +49,7 @@ public class ConnectionScope {
 }
 ```
 
-So now our beloved user needs a way to get her `ConnectionScope`. The standard way to get a `Connection` is a `DataSource` that will usually have a connection pool like [HikariDb](https://github.com/brettwooldridge/HikariCP) behind it. But the main problem with `Connection` and every other resource we use is that we need to remember to `close` it. Fortunately enough, we got `Autocloseable` long ago and its a bit easier. But you can still forget to use try-with-resources. So (inspired by the idea of `Resource`in [Cats](https://typelevel.org/cats-effect/docs/std/resource) or [Arrow](https://arrow-kt.io/docs/apidocs/arrow-fx-coroutines/arrow.fx.coroutines/-resource/)) let's try to build a simple, specific API to use connections without having to remember to close them. And let's inject a `DataSource` to that function by injecing it to the class where the method is:
+So now our beloved user needs a way to get her `ConnectionScope`. The standard way to get a `Connection` is a `DataSource` that will usually have a connection pool like [HikariDb](https://github.com/brettwooldridge/HikariCP) behind it. But the main problem with `Connection` and every other resource we use is that we need to remember to `close` it. Fortunately enough, we got `Autocloseable` long ago and its a bit easier. But you can still forget to use try-with-resources. So (inspired by the idea of `Resource` in [Cats](https://typelevel.org/cats-effect/docs/std/resource) or [Arrow](https://arrow-kt.io/docs/apidocs/arrow-fx-coroutines/arrow.fx.coroutines/-resource/)) let's try to build a simple, specific API to use connections without having to remember to close them. And let's inject a `DataSource` to that function by injecing it to the class where the method is:
 
 ```java
 public final class Jdbc {
@@ -95,7 +95,7 @@ No, you can't call `dataSource.getConnection()` in your `withConnection` method 
 But the truth is I hate `SQLException` to be checked. Unless you know how to deal with them, exceptions should be unchecked. And:
 
 1. There are very few occasions in which I actually deal with an exception thrown by Jdbc.
-2. On those rare ocassions, I don't actually know how to deal with it. Let's say I want to handle duplicate key on insert? I Google that. And last time I tried (which I do every now and then) thre is no standard way to do it. So you need to check some database vendor specific error code. Ugly.
+2. On those rare ocassions, I don't actually know how to deal with it. Let's say I want to handle duplicate key on insert? I Google that. And last time I tried (which I do every now and then) there is no standard way to do it. So you need to check some database vendor specific error code. Ugly.
 
 This being just a litle game, I will simply embed that ugly exception in a `RuntimeException` and call it a day. If I ever want to recover from a duplicate key or something else I'll go and figure out a solution. Future problem, YAGNI, KISS, _etc_{:.sidenote-number} _I could use any other error handling mechanism (like an error monad), but I need this to be familiar to most Java programmers. So I'll keep it ~~simple~~ <ins>familiar</ins>._{:.sidenote}.
 
@@ -172,7 +172,7 @@ Some notes here, just in case you are new to Jdbc or too old to remember that:
 
 ## Parameters
 
-Did you see that ugly `Object` type? A signal of a disaster coming after me here... Thre is a thousand (painful) reasons I'm averse to things that could fail at compile time but fail at runtime. Did you say `select("...", ..., user1)` and `user1` is an instance of `User`, a class with 4 fields in it? No way. `stmt.setObject` won't probably like that.
+Did you see that ugly `Object` type? A signal of a disaster coming after me here... There are a thousand (painful) reasons I'm averse to things that could fail at compile time but fail at runtime. Did you say `select("...", ..., user1)` and `user1` is an instance of `User`, a class with 4 fields in it? No way. `stmt.setObject` won't probably like that.
 
 So let's typesafe that. How? Ok, here is the (hopefully) cool idea I came with some time ago and I keep using everywhere I want some casual Jdbc:
 
@@ -299,7 +299,7 @@ static Param p(Integer value) {
 }
 ```
 
-Did you guess it? Yes, `ps.setInt` takes an `int` value. When you pass an `Integer` value, it auto-unboxes. And if the value was null... Kaboom! `NullPointerException`. I could rewrite the previous section with `String` as the example and pretend I never did the mistake. But let's be trasnparent here. I did it. And now I'm fixing it:
+Did you guess it? Yes, `ps.setInt` takes an `int` value. When you pass an `Integer` value, it auto-unboxes. And if the value was null... Kaboom! `NullPointerException`. I could rewrite the previous section with `String` as the example and pretend I never did the mistake. But let's be honest here. I did it. And now I'm fixing it:
 
 ```java
 static Param p(final Integer value) {
@@ -320,7 +320,7 @@ Last... and, for once, possibly least. We want our user to read the rows in a `R
 3. She does not need to worry about advancing the cursor with `next()`
 4. She does not need to deal with primitive types and `wasNull()` (assuming we can live with wrapping every primitive value in nullable columns)
 
-For that, we are asking our user to provide a lambda that we wil execute to read each row. As we don't want her to mess with `next()` we will handle her a trimmed-down `ResultSet` where she can only get results but not move the cursor. That class can also facilitate things when she deals with nulls and wrarper types:
+For that, we are asking our user to provide a lambda that we will execute to read each row. As we don't want her to mess with `next()` we will handle her a trimmed-down `ResultSet` where she can only get results but not move the cursor. That class can also facilitate things when she deals with nulls and wrapper types:
 
 ```java
 public class ResultSetView {
@@ -442,7 +442,7 @@ public <K> K insertAndGetKey(String sql, RowReader<K> keyReader,  Param... param
 }
 ```
 
-So, one nice thing of our abstraction is that you can create a mehod for each typical use case. One your users will use by simply providing lambdas for the parts they are interested in. It reminds me of the template pattern, if you want. But it is simpler with lambdas.
+So, one nice thing of our abstraction is that you can create a mehod for each typical use case. Once your users will use by simply providing lambdas for the parts they are interested in. It reminds me of the template pattern, if you want. But it is simpler with lambdas.
 
 
 ## Recap
