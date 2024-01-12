@@ -5,16 +5,18 @@ title: "Writing a Property Based Testing library in Kotlin, a Journey. Part 4: H
 author: Jordi Pradel
 categories: [kotlin,propertybasedtesting,pbt,testing,design,fp]
 description: >-
-  TODO()
+  In this entry we retake the Property Based Testing series. But instead of talking about PBT I'll be blogging about the process of enhancing the current design of the library and upgrading its Gradle and Kotlin versions.
 ---
 
-In the previous articles in this series ([1](./2022-10-04-writing-a-pbt-ibrary-1.html), [2](./2022-10-14-writing-a-pbt-ibrary-2.html) and [3](./2022-10-21-writing-a-pbt-ibrary-3.html)) I've been developing a property based testing library from scratch and blogging about the process. It turns out that such library actually exists as a companion repository you can follow while reading. It's [here](https://github.com/agile-jordi/wapbtl). So far all articles in the series have been about property based testing themselves. But, at the same time, I'm blogging about the actual design of a library.
+I've had some busy months since I last wrote anything for the blog. Let's start 2024 by retaking the blog. Today I rescue an entry that I had in progress. We'll do some housekeeping of the Property Based Library I was writing back in 2023.
+
+In the previous articles in this series ([1](./2022-10-04-writing-a-pbt-ibrary-1.html), [2](./2022-10-14-writing-a-pbt-ibrary-2.html) and [3](./2022-10-21-writing-a-pbt-ibrary-3.html)) I was developing a property based testing library from scratch and blogging about the process. It turns out that such library actually exists as a companion repository you can follow while reading. It's [here](https://github.com/agile-jordi/wapbtl/tree/part4). So far all articles in the series were about property based testing themselves. But, at the same time, I'm blogging about the actual design of a library.
 
 Today I want to tidy things up a bit and you bet I'll be blogging about this too.
 
 ## Reorganizing tests
 
-As I'm using the library to write this blog series, I'm actually programming (and running the tests) for the code I use in the blog. But some of those code fragments are actually usage examples (like `Int` tests, `DayOfWeek` and `Geometry`). I put all of those in a simple package `com.agilogy.wapbtl.examples` so that they are not mixed with actual tests of the library, that will be in `com.agilogy.wapbtl.test`. Examples should probably be in a different project in the multiproject build but I'm frankly not in the mood for a fight with Gradle to get that done. Not now.
+As I'm using the library to write this blog series, I'm actually programming (and running the tests) for the code I use in the blog. But some of those code fragments are actually usage examples (like `Int` tests, `DayOfWeek` and `Geometry`). Let's put all of those in a simple package `com.agilogy.wapbtl.examples` so that they are not mixed with actual tests of the library, that will be in `com.agilogy.wapbtl.test`. Examples should probably be in a different project in the multiproject build but I'm frankly not in the mood for a fight with Gradle to get that done. Not now.
 
 As a result of such cleaner separation, our examples of property based testing of `Int` where somehow poor. I thought I needed some other property checked, so I checked `Int` sum is associative:
 
@@ -59,9 +61,9 @@ class PropertyFailedException(
 ): Exception(...)
 ```
 
-When `forAny` takes more than one `Arg`, what would the sample be? We could use tuples and have a sample of type `Pair<A, B>` if we were given 2 args, and a `Triple<A, B, C>` if we were given 3. What if we want a `forAny` of 4 or more values? Coming from Scala I'd say bigger tuples (`Tuple4`, `Tuple5`...) would totally make sense here... even though they are not idiomatic in Kotlin. I could use a `List<Any?>` and put all samples in that list, but I hate to have something that poorly typed. So, lacking a better solution, I will go with the two tuples we already have. Any ideas are welcome here, if you want to tweet (with a mention) or DM them. I'm [@agile_jordi](https://twitter.com/agile_jordi).
+When `forAny` takes more than one `Arg`, what would the sample be? We could use tuples and have a sample of type `Pair<A, B>` if we were given 2 args, and a `Triple<A, B, C>` if we were given 3. What if we want a `forAny` of 4 or more values? Coming from Scala I'd say bigger tuples (`Tuple4`, `Tuple5`...) would totally make sense here... even though they are not idiomatic in Kotlin. I could use a `List<Any?>` and put all samples in that list, but I hate to have something that poorly typed. So, lacking a better solution, I will go with the two tuples we already have. Any ideas are welcome here, if you want to tweet or toot (with a mention) or DM them. I'm [@jordipradel@fosstodon.org](https://fosstodon.org/@jordipradel) (Mastodon, preferred) and  [@agile_jordi](https://twitter.com/agile_jordi) (Twitter).
 
-So now that we decided we expect a tuple, we can fix the test. But, hey, I just did a quick retrospective, right? Don't let the gap grow bigger and fix the test the way tests need to be fixed: by first reproducing them:
+So now that we decided we expect a tuple, we can fix the bug. But, hey, I just did a quick retrospective, right? Don't let the gap grow bigger and fix the bug the way se should: by first reproducing it:
 
 ```kotlin
 @Test
@@ -70,9 +72,9 @@ fun forAny2ArbsFailure() {
   var attempts = 0
   val failure = assertFailsWith<PropertyFailedException> {
     forAny(Arb.int, Arb.int) { a, b ->
-                              attempts += 1
-                              property(a, b) 
-                             }
+      attempts += 1
+      property(a, b) 
+    }
   }
   @Suppress("UNCHECKED_CAST")
   val failedSample = failure.sample as Pair<Int, Int>
@@ -81,7 +83,7 @@ fun forAny2ArbsFailure() {
 }
 ```
 
-So, letting aside the ugly casts, we are testing that whenever a `forAny` that takes two `Arb<Int>` fails, it should return a `Pair<Int,Int>` as the failed sample, and that checking the property on those 2 values should fail. And, it fails. _Yay!_{:.sidenote-number} _Yes, yay! Because when you are writing a test you expect it to be useful. And a test that you write but never fails is giving you exactly 0 value._{:.sidenote} We are also testing what we already tested for the one arbitrary version of `forAny`, to make sure we didn't break the `attempt`result.
+So, letting aside the ugly casts, we are testing that whenever a `forAny` that takes two `Arb<Int>` fails, it should return a `Pair<Int,Int>` as the failed sample, and that checking the property on those 2 values should fail. And, it fails. _Yay!_{:.sidenote-number} _Yes, yay! Because when you are writing a test you expect it to be useful. And a test that you write but never fails is giving you exactly 0 value._{:.sidenote} We are also testing what we already tested for the one arbitrary version of `forAny`, to make sure we didn't break the `attempt` result.
 
 ```shell
 class java.lang.Boolean cannot be cast to class kotlin.Pair
@@ -144,7 +146,7 @@ java.lang.ArithmeticException: / by zero
 
 No `PropertyFailedException`, no seed, no samples. You are on your own to understand the problem. And it may be a flaky test, where you were fortunate enough to catch an example that fails... but that doesn't come along that frequently in your test.
 
-As is customary in testing libraries, we would like to treat the throw of an exception as a test failure. Therefore, we may have 3 possible outcomes of the evaluation of your property for a given example(s). Either the property successfully returns `true`, or it successfully returns `false` or it fails with an exception. We'll consider both returning `false` or throwind an exception a way of telling us the property does not abide.
+As is customary in testing libraries, we would like to treat an exception as a test failure. Therefore, we may have 3 possible outcomes of the evaluation of your property for a given example. Either the property successfully returns `true`, or it successfully returns `false` or it fails with an exception. We'll consider both returning `false` or throwing an exception a way of telling us the property does not abide.
 
 For that we need to... first write a test! 
 
@@ -271,3 +273,86 @@ fun <A> testForAny(aa: Arb<A>, seed: Long? = null, property: (A) -> Unit) =
 
 Refactor: I could reuse some lines between the two functions that test how the property based tests fail, but the resulting code is too much difficult to grasp. 
 
+## Having fun with fun interfaces
+
+One more thing... So far, every time we define a new instance of `Arb` we go like this:
+
+```kotlin
+val Arb.Companion.float: Arb<Float>
+    get() = object : Arb<Float> {
+        override fun generate(random: Random): Float = 
+          random.nextFloat()
+    }
+```
+
+But you may know Kotlin has this nice feature called [functional interfaces](https://kotlinlang.org/docs/fun-interfaces.html). We only need to add the `fun` keyword to our interface:
+
+```kotlin
+fun interface Arb<A> {
+    fun generate(random: Random): A
+
+    companion object
+}
+```
+
+And we can now simplify all those `object : Arb<...>` expressions like in the example below:
+
+```kotlin
+val Arb.Companion.float: Arb<Float>
+    get() = Arb { random -> random.nextFloat() }
+```
+
+## Upgrading Gradle and libraries
+
+Finally, since it's been quite long since I last worked on this library, some of its dependencies are a bit outdated. Let us fix that.
+
+I'll start with Gradle. Acording to `./gradlew --version`, the project is currently using Gradle 7.3.3. What version should we upgrade to? Let's do some research:
+
+- The latest Gradle version at the time of writing is [8.5](https://gradle.org/releases/) 
+- The Kotlin Gradle Plugin latest supported Gradle version is 8.1.1 acording to [the documentation](https://kotlinlang.org/docs/gradle-configure-project.html#apply-the-plugin).
+- But Ktor is using [8.4](https://github.com/ktorio/ktor/pull/3802)
+
+So we'll use 8.4.
+
+We could change files by hand, but there is already a Gradle task to upgrade the gradle wrapper:
+
+```shell
+$ gradle wrapper --gradle-version 8.4
+...
+$ git status
+...
+Changes not staged for commit:
+        modified:   gradle/wrapper/gradle-wrapper.jar
+        modified:   gradle/wrapper/gradle-wrapper.properties
+        modified:   gradlew
+        modified:   gradlew.bat
+...
+$ git commit -am "Upgrade Gradle to latest supported version"
+```
+
+
+Now we can upgrade the Kotlin Gradle Plugin to the [latest version](https://plugins.gradle.org/plugin/org.jetbrains.kotlin.android/1.9.22). For that, we need to change the corresponding line in `build.gradle.kts`:
+
+
+```kotlin
+kotlin("multiplatform") version "1.9.22"
+```
+
+But then, we'll find our build fails and, when fixed, emits some warnings. Here are some changes we need to do to `build.gradle.kts`:
+
+- `cssSupport.enabled = true` is not supported anymore. We need to replace it with `cssSupport{enabled = true}`
+- The Kotlin/JS Legacy compiler backend is deprecated. We need to replace `js(LEGACY)` with `js`.
+- Variable `nativeTarget` is never used. I wanted a Kotlin multiplatform build so that the library can be used in any platform. But I don't want to spend time configuring native builds now, so I'll simply remove the build for those. We can add them later on if we want.
+
+
+Furthermore, Kotlin 1.9.20 brought us [templates for multiplatform projects](https://kotlinlang.org/docs/whatsnew1920.html#template-for-configuring-multiplatform-projects). The neat result is that we can simply remove all the manual `sourceSets` configuration we had and replace it with just the configuration of the dependencies we need:
+
+```kotlin
+dependencies {
+    commonTestImplementation(kotlin("test"))
+}
+```
+
+## Recap
+
+We made some maintenance tasks on our beloved Property Based Testing library. We reorganized packages to better distinguish between tests and examples. As a result of that, we improved some example tests and found a design failure that we fixed using TDD. We enhanced the usability of the library by adding explicit support to exceptions during tests. Finally, we upgraded both Gradle and Kotlin to the latest current versions.
