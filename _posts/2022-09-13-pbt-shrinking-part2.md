@@ -23,15 +23,15 @@ Today we'll try to discuss how this intuititive idea of shrinking can be automat
 
 ## Shrinking functions
 
-Let's say our PBT library encodes generators of values of type `A` as an interface `Gen<A>`. In our example above, we would have a `Gen<ItemSearchCriteria>`. Such an interface would be something like:
+Let's say our PBT library encodes generators of values of type `A` as an interface `Arb<A>`. In our example above, we would have a `Arb<ItemSearchCriteria>`. Such an interface would be something like:
 
 ```kotlin
-interface Gen<A>{
-  fun generateSample(seed: RandomSeed): A
+interface Arb<A>{
+  fun generate(random: Random): A
 }
 ```
 
-Intuitevly we would like to also have Shrinkers, that we could define as a separate interface or as part of the `Gen` interface. In any case, they would provide a function that given a value of type `A` returns the list of possible first level shrinks:
+Intuitively we would like to also have Shrinkers, that we could define as a separate interface or as part of the `Arb` interface. In any case, they would provide a function that given a value of type `A` returns the list of possible first level shrinks:
 
 ```kotlin
 fun shrinks(value: A): List<A>
