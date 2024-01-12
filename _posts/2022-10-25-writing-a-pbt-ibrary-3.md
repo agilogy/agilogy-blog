@@ -257,6 +257,7 @@ You can see the current version of our library at [https://github.com/agile-jord
 1. [Writing a property based testing library, part 1](./2022-10-04-writing-a-pbt-ibrary-1.html)
 2. [Writing a property based testing library, part 2](./2022-10-14-writing-a-pbt-ibrary-2.html)
 3. [Writing a property based testing library, part 3](./2022-10-25-writing-a-pbt-ibrary-3.html)
+4. [Writing a property based testing library, part 4](./2024-01-12-writing-a-pbt-library-4-housekeeping.html)
 
 
 

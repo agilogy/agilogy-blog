@@ -12,7 +12,10 @@ I've had some busy months since I last wrote anything for the blog. Let's start 
 
 In the previous articles in this series ([1](./2022-10-04-writing-a-pbt-ibrary-1.html), [2](./2022-10-14-writing-a-pbt-ibrary-2.html) and [3](./2022-10-21-writing-a-pbt-ibrary-3.html)) I was developing a property based testing library from scratch and blogging about the process. It turns out that such library actually exists as a companion repository you can follow while reading. It's [here](https://github.com/agile-jordi/wapbtl/tree/part4). So far all articles in the series were about property based testing themselves. But, at the same time, I'm blogging about the actual design of a library.
 
-Today I want to tidy things up a bit and you bet I'll be blogging about this too.
+![Pulp Fiction Winston Wolf](../assets/img/winstonWolf.gif){:.figcaption}
+_Let's start!_{:.figcaption}
+
+As I was focusing on writing about PBT the library has accumulated some problems I'd like fixed. And you bet I'll be blogging about this too.
 
 ## Reorganizing tests
 
@@ -356,3 +359,11 @@ dependencies {
 ## Recap
 
 We made some maintenance tasks on our beloved Property Based Testing library. We reorganized packages to better distinguish between tests and examples. As a result of that, we improved some example tests and found a design failure that we fixed using TDD. We enhanced the usability of the library by adding explicit support to exceptions during tests. Finally, we upgraded both Gradle and Kotlin to the latest current versions.
+
+## All articles in the series
+
+1. [Writing a property based testing library, part 1](./2022-10-04-writing-a-pbt-ibrary-1.html)
+2. [Writing a property based testing library, part 2](./2022-10-14-writing-a-pbt-ibrary-2.html)
+3. [Writing a property based testing library, part 3](./2022-10-25-writing-a-pbt-ibrary-3.html)
+4. [Writing a property based testing library, part 4](./2024-01-12-writing-a-pbt-library-4-housekeeping.html)
+
