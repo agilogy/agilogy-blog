@@ -3,7 +3,7 @@
 layout: post
 title: "Writing a Property Based Testing library in Kotlin, a Journey. Part 4: Housekeeping"
 author: Jordi Pradel
-categories: [kotlin,propertybasedtesting,pbt,testing,design,fp]
+categories: [kotlin,propertybasedtesting,pbt,testing,design,fp,gradle]
 description: >-
   In this entry we retake the Property Based Testing series. But instead of talking about PBT I'll be blogging about the process of enhancing the current design of the library and upgrading its Gradle and Kotlin versions.
 ---
@@ -366,4 +366,3 @@ We made some maintenance tasks on our beloved Property Based Testing library. We
 2. [Writing a property based testing library, part 2](./2022-10-14-writing-a-pbt-ibrary-2.html)
 3. [Writing a property based testing library, part 3](./2022-10-25-writing-a-pbt-ibrary-3.html)
 4. [Writing a property based testing library, part 4](./2024-01-12-writing-a-pbt-library-4-housekeeping.html)
-
