@@ -18,7 +18,7 @@ To do so, we needed a common starting point, for which we used the Hexagonal Arc
 
 From there on, we started, as we should, by the basic principles, patterns and strategies that are common to software testing in any technology or programming language.
 
-In the following weeks or months I'll be blogging about these testing strategies we use at Agilogy. We may even write about Hexagonal Architecture before that, se we make it clear the way we talk about it.
+In the following weeks or months I'll be blogging about these testing strategies we use at Agilogy. We may even write about Hexagonal Architecture before that, so we make it clear the way we talk about it.
 
 In the meantime, I'm sharing the slides of the workshop we are working on:
 
