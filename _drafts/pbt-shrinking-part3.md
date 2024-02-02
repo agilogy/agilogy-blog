@@ -5,11 +5,80 @@ date:   2022-05-15 19:01:57 +0200
 categories: kotlin
 ---
 
-### When to stop searching?
+Back on 2022 I wrote about Property Based Testing shrinking. In [the first post of the series](/2022-08-26-pbt-shrinking-part1.html) I introduced the concept of shrinking. Once our Property Based Test fails, we want a simplified example of the provided inputs ([and state](/2022-06-17-testing-and-persistent-state.html)) that still detects the bug, removing as much complexity as we can from the randomly generated value that actually found the bug. Then, in the [second post of the series](/2022-09-13-pbt-shrinking-part2.html), we saw how a srhinking function of type `type ShrinkFunction<A> = (A) -> List<A>` may allow us to automate the generation of such a tree.
 
-One usual strategy is to return the last failing example once we find an example that passes the build. Unfortunately, in our example that would give us example 2️⃣, as that is the last failing example we find before a successful one (3️⃣). That example corresponded to `ItemSearchCriteria(ItemFilter(null, 110, 2022-01-01T00:00:00.000, setOf(Tag.clothes, Tag.exclusive)), Indifferent)`, which is far from the simplest example we may find. 
+In the firtst post we saw an example of the _manual_ shrinking of `ItemSearchCriteria  that gave us a search tree like:
 
-Other, smarter, strategies are possible. We can look afer an example that fails and can't be shrinked further, like :nine: above. But we may find that a shrinkeable example fails but every possible shrinking we attempt passes the tests. In such cases, we can finish searching too, but we may end up with an example that is a local min, like _A below_{:.sidenote-number} _We can't find simpler examples than A in its path, but C is simpler (and may be even further shrinkable)._{:.sidenote}:
+```mermaid
+graph LR
+  0[initial &#x1F525] --> 1[1 &#x1F525] --> 2[2 &#x1F525] --> 3[3 &#x2705]
+  0 --> initialOthers[...]
+  1 --> 1others[...]
+  2 --> 4[4 &#x1F525] --> 5[5 &#x1F525]--> 6[6 &#x2705]
+  2 --> 2others[...]
+  4 --> 4others[...]
+  5 --> 7[7 &#x1F525] --> 8[8 &#x1F525] --> 9[9 &#x1F525]
+  5 --> 5others[...]
+  7 --> 7others[...]
+  8 --> 8others[...]
+```
+
+Where:
+
+1️⃣ 🔥 was: 
+
+```kotlin
+ItemSearchCriteria(ItemFilter(23, 110, 2022-01-01T00:00:00.000, setOf(Tag.clothes, Tag.exclusive)), Indifferent)
+```
+
+2️⃣ 🔥 was:
+
+```kotlin
+ItemSearchCriteria(ItemFilter(null, 110, 2022-01-01T00:00:00.000, setOf(Tag.clothes, Tag.exclusive)), Indifferent)
+```
+
+3️⃣ ✅ was:
+
+```kotlin
+ItemSearchCriteria(ItemFilter(null, null, 2022-01-01T00:00:00.000, setOf(Tag.clothes, Tag.exclusive)), Indifferent)
+```
+
+4️⃣ 🔥 was:
+
+```kotlin
+ItemSearchCriteria(ItemFilter(null, 110, null, setOf(Tag.clothes, Tag.exclusive)), Indifferent)
+```
+
+5️⃣ 🔥 was:
+
+
+```kotlin
+ItemSearchCriteria(ItemFilter(null, 110, null, emptySet()), Indifferent)
+```
+
+6️⃣ ✅ was:
+
+```kotlin
+ItemSearchCriteria(ItemFilter(null, null, null, emptySet()), Indifferent)
+```
+
+And  7️⃣🔥, 8️⃣🔥 and 9️⃣🔥 shrinked the value 110 from 5️⃣ to 100, 50 and 0 to get:
+
+```kotlin
+ItemSearchCriteria(ItemFilter(null, 0, null, emptySet()), Indifferent)
+```
+
+### The immensity of (the problem) space
+
+If we are to automate the search of the simplest example still failing our test, one ideal situation would be to traverse **all of** the shrinking tree and return the simplest solution in it. But there is one problem. For any non-trivial shrinking function, if we are not lucky enough, the tree can be too big. Our shrinking function may take forever.
+
+So we need to know...
+
+## When to stop searching?
+
+Some libraries take the approach to return the last failing example once they find an example that passes the build. Unfortunately, in our example that would give us example 2️⃣, as that is the last failing example we find before a successful one (3️⃣). That example corresponded to `ItemSearchCriteria(ItemFilter(null, 110, 2022-01-01T00:00:00.000, setOf(Tag.clothes, Tag.exclusive)), Indifferent)`, which is far from the simplest example we may find. 
+
+Other, smarter, strategies are possible. We can look after an example that fails and can't be shrinked further, like :nine: above. But we may find that a shrinkeable example fails but every possible shrinking we attempt passes the tests. In such cases, we can finish searching too, but we may end up with an example that is a local min, like _A below_{:.sidenote-number} _We can't find simpler examples than A in its path, but C is simpler (and may be even further shrinkable)._{:.sidenote}:
 
 ```mermaid
 graph LR
@@ -31,7 +100,17 @@ testAll(itemSearchCriteriaArb, shrinkUntil = StopCondition.after(3.minutes)) {
 
 ### What's the size of an example? Which one is _simpler_?
 
-The strategy mentioned above opens another question: Which of the failing examples found so far is simpler? We are assuming example `C` above is simpler than `A` because, from the initial failing value, `C` was obtained applying 2 shrinks while `A` required just one. Although there may be other responses to this question, we have found that one to work quite well in real-world application.
+The strategy mentioned above opens another question: Which of the failing examples found so far is simpler? 
+
+We used the depth in the tree as an answer: we assume example `C` above is simpler than `A` because, from the initial failing value, `C` was obtained applying 2 shrinks while `A` required just one. Although there may be other responses to this question, we have found that one to work quite well in real-world application.
+
+
+
+
+
+
+
+**TODO**: Already explained in previous articles:
 
 ## Shrinking in PBT libraries
 
