@@ -5,7 +5,7 @@ title: "Testing the Agilogy Way"
 author: Jordi Pradel
 categories: [testing,design,hexagonal]
 description: >-
-  At Agilogy we have a curated way of testing software. Here I discuss smoe of my thoughts on the subject and I share the slides of an internal workshop that discuss the Principles, Patterns and Strategies to test software in Hexagonal Architectures.
+  At Agilogy we have a curated way of testing software. Here I discuss some of my thoughts on the subject and I share the slides of an internal workshop that discuss the Principles, Patterns and Strategies to test software in Hexagonal Architectures.
 ---
 
 We at Agilogy love our craft. And we like having technical discussions, trainings and workshops that allow us to continuously improve the way we develop software. That's the reason we devote part of our Friday's mornings to what we call the Agilogy School. These sessions are the weekly occasion for everyone at Agilogy to share and learn about common interests like testing, programming languages, functional programming, software architecture, design, etc.
