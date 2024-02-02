@@ -10,6 +10,7 @@ A series of articles that introduce automated testing from the very beginning. W
 - [What is an automated test, again?](/2022-05-27-what-is-an-automated-test-again.html)
 - [Testing and persistent state](/2022-06-17-testing-and-persistent-state.html)
 - [Testing other side effects](/2022-07-08-testing-other-side-effects.html)
+- [Testing the Agilogy Way](/2024-02-02-testing-the-agilogy-way.html)
 
 ## Property Based Testing: Shrinking
 
