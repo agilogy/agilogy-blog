@@ -30,7 +30,7 @@ If we agree on that... I already hear some of the voices: "Ok, we'll format code
 
 ## THE solution
 
-Let's do straight to the point:
+Let's go straight to the point:
 
 1. Formatting rules violations should be treated like compilation or test errors. They are errors. Not warnings. Not printed logs you can ignore. They should imply failing builds.
 
